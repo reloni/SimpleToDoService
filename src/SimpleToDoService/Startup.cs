@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -30,7 +31,7 @@ namespace SimpleToDoService
 
 			var connectionString = Configuration["DbContextSettings:ConnectionString"];
 			Console.WriteLine(connectionString);
-			//services.AddDbContext<DatabaseContext>(opts => opts.UseNpgsql(connectionString));
+			services.AddDbContext<ToDoContext>(opts => opts.UseNpgsql(connectionString));
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -39,6 +40,8 @@ namespace SimpleToDoService
 			{
 				app.UseDeveloperExceptionPage();
 			}
+
+			app.UseMiddleware<BasicAuthMiddleware>();
 
 			app.UseMvc();
 			//app.UseMiddleware<HeaderCheckMiddleware>();
