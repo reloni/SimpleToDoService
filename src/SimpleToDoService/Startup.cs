@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,7 +27,14 @@ namespace SimpleToDoService
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			services.AddMvc();
+			services.AddMvc()
+			        .AddXmlSerializerFormatters()
+			        .AddXmlDataContractSerializerFormatters()
+			        .AddJsonOptions(o =>
+					{
+						o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
+					});
 
 			var connectionString = Configuration["DbContextSettings:ConnectionString"];
 

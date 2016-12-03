@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using Microsoft.AspNetCore.Mvc;
+using SimpleToDoService.Entities;
 using SimpleToDoService.Repository;
 
 namespace SimpleToDoService
@@ -20,14 +22,14 @@ namespace SimpleToDoService
 		}
 
 		[HttpGet("{id:int?}")]
-		public JsonResult Get(int? id)
+		public IEnumerable<ToDoEntry> Get(int? id)
 		{
 			var entries = repository.Entries(CurrentUserId);
 
 			if (id != null)
 				entries = entries.Where(o => o.Id == id);
 
-			return Json(entries.Select(o => new { o.Id, o.Completed, o.Description, o.Notes, UserId = CurrentUserId }));
+			return entries;
 		}
 	}
 }
