@@ -9,7 +9,6 @@ namespace SimpleToDoService
 	{
 		private readonly IToDoRepository repository;
 
-
 		public int CurrentUserId
 		{
 			get { return (int)HttpContext.Items["UserId"]; }
@@ -20,9 +19,15 @@ namespace SimpleToDoService
 			this.repository = repository;
 		}
 
-		public JsonResult Get()
+		[HttpGet("{id:int?}")]
+		public JsonResult Get(int? id)
 		{
-			return Json(repository.Entries(CurrentUserId).Select(o => new { o.Id, o.Completed, o.Description, o.Notes, UserId = CurrentUserId }));
+			var entries = repository.Entries(CurrentUserId);
+
+			if (id != null)
+				entries = entries.Where(o => o.Id == id);
+
+			return Json(entries.Select(o => new { o.Id, o.Completed, o.Description, o.Notes, UserId = CurrentUserId }));
 		}
 	}
 }
