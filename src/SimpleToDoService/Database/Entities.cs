@@ -1,20 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
 
-namespace SimpleToDoService
+namespace SimpleToDoService.Entities
 {
-	public class ToDoContext : DbContext
-	{
-
-		public ToDoContext(DbContextOptions<ToDoContext> options) : base(options) { }
-
-		public DbSet<User> Users { get; set; }
-
-		public DbSet<ToDoEntry> ToDoEntries { get; set; }
-	}
-
 	[Table("todouser")]
 	public class User
 	{

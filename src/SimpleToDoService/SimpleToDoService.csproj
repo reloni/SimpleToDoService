@@ -13,6 +13,9 @@
   <ItemGroup>
     <Compile Include="**\*.cs" Exclude="$(GlobalExclude)" />
     <EmbeddedResource Include="**\*.resx" Exclude="$(GlobalExclude)" />
+    <Compile Remove="ToDoController.cs" />
+    <Compile Remove="ToDoContext.cs" />
+    <Compile Remove="BasicAuthMiddleware.cs" />
   </ItemGroup>
 
   <ItemGroup>
@@ -67,6 +70,11 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DbScripts\CreateTables.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Controllers\" />
+    <Folder Include="Database\" />
+    <Folder Include="Middleware\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

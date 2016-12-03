@@ -5,19 +5,20 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Net.Http.Headers;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using SimpleToDoService.Repository;
+using SimpleToDoService.Context;
 
-
-namespace SimpleToDoService
+namespace SimpleToDoService.Middleware
 {
 	public class BasicAuthMiddleware
 	{
 		private readonly RequestDelegate next;
-		private ToDoContext dbContext;
+		private IToDoRepository repository;
 
-		public BasicAuthMiddleware(RequestDelegate next, ToDoContext databaseContext)
+		public BasicAuthMiddleware(RequestDelegate next, IToDoRepository repository)
 		{
 			this.next = next;
-			dbContext = databaseContext;
+			this.repository = repository;
 		}
 
 		public async Task Invoke(HttpContext context)
@@ -31,7 +32,8 @@ namespace SimpleToDoService
 				var user = credentials.FirstOrDefault();
 				var password = credentials.Skip(1).FirstOrDefault();
 
-				var currentUser = dbContext.Users.Where(o => o.Email == user && o.Password == password).FirstOrDefault();
+				var currentUser = repository.Users().Where(o => o.Email == user && o.Password == password).FirstOrDefault();
+
 				if (currentUser != null)
 				{
 					context.Items.Add("UserId", currentUser.Id);

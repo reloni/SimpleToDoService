@@ -1,14 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SimpleToDoService.Context;
+using SimpleToDoService.Middleware;
+using SimpleToDoService.Repository;
 
 namespace SimpleToDoService
 {
@@ -30,8 +29,10 @@ namespace SimpleToDoService
 			services.AddMvc();
 
 			var connectionString = Configuration["DbContextSettings:ConnectionString"];
-			Console.WriteLine(connectionString);
-			services.AddDbContext<ToDoContext>(opts => opts.UseNpgsql(connectionString));
+
+			services.AddDbContext<ToDoDbContext>(opts => opts.UseNpgsql(connectionString));
+			services.AddScoped<IToDoDbContext, ToDoDbContext>();
+			services.AddScoped<IToDoRepository, ToDoRepository>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
@@ -44,7 +45,6 @@ namespace SimpleToDoService
 			app.UseMiddleware<BasicAuthMiddleware>();
 
 			app.UseMvc();
-			//app.UseMiddleware<HeaderCheckMiddleware>();
 		}
 	}
 }
