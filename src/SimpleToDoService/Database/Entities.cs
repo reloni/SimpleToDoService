@@ -39,7 +39,6 @@ namespace SimpleToDoService.Entities
 	{
 		[Key]
 		[Column("id")]
-		[Required]
 		public int Id { get; set; }
 
 		[Column("completed")]
@@ -59,7 +58,6 @@ namespace SimpleToDoService.Entities
 		[ForeignKey("User")]
 		public int UserId { get; set; }
 
-		//[ForeignKey("owner")]
 		public User User { get; set; }
 	}
 }

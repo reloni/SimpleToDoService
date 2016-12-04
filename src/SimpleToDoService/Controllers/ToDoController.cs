@@ -47,11 +47,13 @@ namespace SimpleToDoService
 			return CreatedAtRoute("GetToDoEntry", new { Id = created.Id }, created);
 		}
 
-		[HttpPut("{id:int}")]
-		public IActionResult Put(int id, [FromBody] ToDoEntry entry)
+		[HttpPut("{id:int?}")]
+		public IActionResult Put(int? id, [FromBody] ToDoEntry entry)
 		{
-			//var v = ModelState.Values.FirstOrDefault();
-			entry.Id = id;
+			if (!id.HasValue)
+				return BadRequest(new { Error = "Object Id not specified" });
+
+			entry.Id = id.Value;
 			entry.UserId = CurrentUserId;
 
 			var updated = repository.UpdateEntry(entry);
@@ -60,17 +62,6 @@ namespace SimpleToDoService
 				return NotFound(entry);
 
 			return Ok(updated);
-			/*
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
-			if (entry == null)
-				return BadRequest();
-
-			entry.UserId = CurrentUserId;
-			var created = repository.CreateEntry(entry);
-			return CreatedAtRoute("GetToDoEntry", new { Id = created.Id }, created);
-			*/
 		}
 	}
 }
