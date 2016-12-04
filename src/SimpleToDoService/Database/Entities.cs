@@ -55,8 +55,11 @@ namespace SimpleToDoService.Entities
 		[MaxLength(4000)]
 		public string Notes { get; set; }
 
-		[ForeignKey("owner")]
-		[Required]
+		[Column("owner")]
+		[ForeignKey("User")]
+		public int UserId { get; set; }
+
+		//[ForeignKey("owner")]
 		public User User { get; set; }
 	}
 }

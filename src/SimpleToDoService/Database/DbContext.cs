@@ -8,6 +8,8 @@ namespace SimpleToDoService.Context
 	{
 		DbSet<User> Users { get; }
 		DbSet<ToDoEntry> ToDoEntries { get; }
+
+		int SaveChanges();
 	}
 
 	public class ToDoDbContext : DbContext, IToDoDbContext

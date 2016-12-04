@@ -21,7 +21,7 @@ namespace SimpleToDoService
 			this.repository = repository;
 		}
 
-		[HttpGet("{id:int?}")]
+		[HttpGet("{id:int?}", Name = "GetToDoEntry")]
 		public IEnumerable<ToDoEntry> Get(int? id)
 		{
 			var entries = repository.Entries(CurrentUserId);
@@ -30,6 +30,21 @@ namespace SimpleToDoService
 				entries = entries.Where(o => o.Id == id);
 
 			return entries;
+		}
+
+
+		[HttpPost]
+		public IActionResult Post([FromBody] ToDoEntry entry)
+		{
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+			
+			if (entry == null)
+				return BadRequest();
+
+			entry.UserId = CurrentUserId;
+			var created = repository.CreateEntry(entry);
+			return CreatedAtRoute("GetToDoEntry", new { Id = created.Id }, created);
 		}
 	}
 }
