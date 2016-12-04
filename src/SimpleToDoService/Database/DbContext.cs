@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SimpleToDoService.Entities;
 
@@ -10,6 +10,8 @@ namespace SimpleToDoService.Context
 		DbSet<ToDoEntry> ToDoEntries { get; }
 
 		int SaveChanges();
+
+		ToDoEntry UpdateToDoEntry(ToDoEntry entry);
 	}
 
 	public class ToDoDbContext : DbContext, IToDoDbContext
@@ -19,5 +21,13 @@ namespace SimpleToDoService.Context
 		public DbSet<User> Users { get; set; }
 
 		public DbSet<ToDoEntry> ToDoEntries { get; set; }
+
+		public ToDoEntry UpdateToDoEntry(ToDoEntry entry)
+		{
+			if(ToDoEntries.Where(o => o.Id == entry.Id).Count() == 1)
+				return Update(entry).Entity;
+
+			return null;
+		}
 	}
 }

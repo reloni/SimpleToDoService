@@ -14,6 +14,7 @@ namespace SimpleToDoService.Repository
 		IEnumerable<ToDoEntry> Entries(int userId);
 		ToDoEntry Entry(int userId, int entryId);
 		ToDoEntry CreateEntry(ToDoEntry entry);
+		ToDoEntry UpdateEntry(ToDoEntry entry);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -38,8 +39,21 @@ namespace SimpleToDoService.Repository
 		public ToDoEntry CreateEntry(ToDoEntry entry)
 		{
 			var entity = context.ToDoEntries.Add(entry);
-			context.SaveChanges();
-			return entity.Entity;
+
+			if(context.SaveChanges() == 1)
+				return entity.Entity;
+
+			return null;
+		}
+
+		public ToDoEntry UpdateEntry(ToDoEntry entry)
+		{
+			var updated = context.UpdateToDoEntry(entry);
+
+			if(context.SaveChanges() == 1)
+				return updated;
+
+			return null;
 		}
 
 		public User User(int id)

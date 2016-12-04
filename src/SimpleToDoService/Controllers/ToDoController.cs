@@ -46,5 +46,31 @@ namespace SimpleToDoService
 			var created = repository.CreateEntry(entry);
 			return CreatedAtRoute("GetToDoEntry", new { Id = created.Id }, created);
 		}
+
+		[HttpPut("{id:int}")]
+		public IActionResult Put(int id, [FromBody] ToDoEntry entry)
+		{
+			//var v = ModelState.Values.FirstOrDefault();
+			entry.Id = id;
+			entry.UserId = CurrentUserId;
+
+			var updated = repository.UpdateEntry(entry);
+
+			if (updated == null)
+				return NotFound(entry);
+
+			return Ok(updated);
+			/*
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			if (entry == null)
+				return BadRequest();
+
+			entry.UserId = CurrentUserId;
+			var created = repository.CreateEntry(entry);
+			return CreatedAtRoute("GetToDoEntry", new { Id = created.Id }, created);
+			*/
+		}
 	}
 }
