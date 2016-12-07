@@ -51,7 +51,7 @@ namespace SimpleToDoService
 		public IActionResult Put(int? id, [FromBody] ToDoEntry entry)
 		{
 			if (!id.HasValue)
-				return BadRequest(new { Error = "Object Id not specified" });
+				return BadRequest(new ServiceError() { Message = "Object Id not specified" });
 
 			entry.Id = id.Value;
 			entry.UserId = CurrentUserId;
@@ -62,6 +62,20 @@ namespace SimpleToDoService
 				return NotFound(entry);
 
 			return Ok(updated);
+		}
+
+		[HttpDelete("{id:int?}")]
+		public IActionResult Delete(int? id)
+		{
+			if (!id.HasValue)
+				return BadRequest(new ServiceError() { Message = "Object Id not specified" });
+
+			var deleted = repository.DeleteEntry(id.Value);
+
+			if (deleted)
+				return new StatusCodeResult(204);
+
+			return new NotFoundResult();
 		}
 	}
 }

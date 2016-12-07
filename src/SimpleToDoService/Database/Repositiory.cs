@@ -15,6 +15,7 @@ namespace SimpleToDoService.Repository
 		ToDoEntry Entry(int userId, int entryId);
 		ToDoEntry CreateEntry(ToDoEntry entry);
 		ToDoEntry UpdateEntry(ToDoEntry entry);
+		bool DeleteEntry(int id);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -29,6 +30,11 @@ namespace SimpleToDoService.Repository
 		public IEnumerable<ToDoEntry> Entries(int userId)
 		{
 			return context.ToDoEntries.Where(o => o.User.Id == userId);
+		}
+
+		public IEnumerable<User> Users()
+		{
+			return context.Users;
 		}
 
 		public ToDoEntry Entry(int userId, int entryId)
@@ -61,9 +67,21 @@ namespace SimpleToDoService.Repository
 			return context.Users.Where(o => o.Id == id).FirstOrDefault();
 		}
 
-		public IEnumerable<User> Users()
+		public bool DeleteEntry(int id)
 		{
-			return context.Users;
+			var entry = new ToDoEntry() { Id = id };
+			context.ToDoEntries.Attach(entry);
+			context.ToDoEntries.Remove(entry);
+			try
+			{
+				context.SaveChanges();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				// entity doesn't exists in this case
+				return false;
+			}
+			return true;
 		}
 	}
 }

@@ -78,6 +78,7 @@
     <Folder Include="Controllers\" />
     <Folder Include="Database\" />
     <Folder Include="Middleware\" />
+    <Folder Include="Common\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
