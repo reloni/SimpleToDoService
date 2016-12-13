@@ -1,2 +1,2 @@
-mkdir -p ./Publish
-(cd ./src/SimpleToDoService && dotnet publish -o "../../Publish/Debug" -c Debug)
+(cd sources/src/SimpleToDoService && dotnet restore)
+(cd sources/src/SimpleToDoService && dotnet publish -o "../../Publish/Debug" -c Debug)
