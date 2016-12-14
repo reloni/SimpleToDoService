@@ -1,0 +1,14 @@
+FROM microsoft/dotnet:1.1.0-runtime
+
+# Copy our code to the "/app" folder in our container
+WORKDIR /app
+COPY ./published/debug .
+
+# Expose port 5000 for the Web API traffic
+ENV ASPNETCORE_URLS http://+:5000
+EXPOSE 5000
+
+ENV ASPNETCORE_ENVIRONMENT Development
+
+# Run the dotnet application against a DLL from within the container
+ENTRYPOINT ["dotnet", "SimpleToDoService.dll"]
