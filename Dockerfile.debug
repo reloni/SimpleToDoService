@@ -2,7 +2,7 @@ FROM microsoft/dotnet:1.1.0-runtime
 
 # Copy our code to the "/app" folder in our container
 WORKDIR /app
-COPY ./Publish/Debug .
+COPY ./published/Debug .
 
 # Expose port 5000 for the Web API traffic
 ENV ASPNETCORE_URLS http://+:5000
