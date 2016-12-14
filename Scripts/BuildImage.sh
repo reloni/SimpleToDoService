@@ -1,7 +1,6 @@
-!/bin/bash
-
 set -ev
-${TRAVIS_BUILD_DIR}
+
+echo ${TRAVIS_BUILD_DIR}
 ls
 
 if [ "${TRAVIS_TAG}" != "" ]; then
