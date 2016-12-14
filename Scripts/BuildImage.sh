@@ -1,11 +1,11 @@
 !/bin/bash
 
 set -ev
-PWD
+${TRAVIS_BUILD_DIR}
 ls
 
 if [ "${TRAVIS_TAG}" != "" ]; then
-  docker run -it --rm -v /$PWD/.:/sources microsoft/dotnet:1.1.0-sdk-msbuild bash /sources/scripts/PublishDebug.sh
+  docker run -it --rm -v /${TRAVIS_BUILD_DIR}/.:/sources microsoft/dotnet:1.1.0-sdk-msbuild bash /sources/scripts/PublishDebug.sh
   docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
   export REPO=reloni/todo-serivce
   export TAG=Debug-${TRAVIS_TAG}
