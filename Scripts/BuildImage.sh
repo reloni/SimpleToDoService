@@ -2,7 +2,7 @@
 set -ev
 
 curdir=$TRAVIS_BUILD_DIR
-echo curdir
+echo $curdir
 ls
 
 if [ "${TRAVIS_TAG}" != "" ]; then
