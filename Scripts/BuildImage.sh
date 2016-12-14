@@ -1,6 +1,8 @@
 !/bin/bash
 
 set -ev
+PWD
+ls
 
 if [ "${TRAVIS_TAG}" != "" ]; then
   docker run -it --rm -v /$PWD/.:/sources microsoft/dotnet:1.1.0-sdk-msbuild bash /sources/scripts/PublishDebug.sh
