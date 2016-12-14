@@ -14,5 +14,5 @@ script:
     docker build -f Dockerfile.debug -t $REPO:$TAG .;
     docker tag $REPO:$TAG $REPO:latest;
     docker push $REPO;
-  fi
+    fi
   #./Scripts/BuildImage.sh
