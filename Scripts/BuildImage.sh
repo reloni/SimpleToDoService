@@ -1,7 +1,7 @@
 #!/bin/sh
 set -ev
 
-curdir=${TRAVIS_BUILD_DIR}
+curdir="${TRAVIS_BUILD_DIR}"
 echo curdir
 ls
 
