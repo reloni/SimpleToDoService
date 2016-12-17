@@ -36,7 +36,7 @@ namespace SimpleToDoService
 						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 					});
 
-			var connectionString = Configuration["DbContextSettings:ConnectionString"];
+			var connectionString = Configuration["DbContextSettings:ConnectionString_localhost"];
 
 			services.AddDbContext<ToDoDbContext>(opts => opts.UseNpgsql(connectionString));
 			services.AddScoped<IToDoDbContext, ToDoDbContext>();
