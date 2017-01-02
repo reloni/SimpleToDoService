@@ -43,6 +43,7 @@ namespace SimpleToDoService
 				return BadRequest();
 
 			entry.UserId = CurrentUserId;
+			entry.Id = 0;
 			var created = repository.CreateEntry(entry);
 			return CreatedAtRoute("GetToDoEntry", new { Id = created.Id }, created);
 		}
