@@ -24,7 +24,7 @@ namespace SimpleToDoService
 		[HttpGet("{id:int?}", Name = "GetToDoEntry")]
 		public IEnumerable<ToDoEntry> Get(int? id)
 		{
-			var entries = repository.Entries(CurrentUserId);
+			var entries = repository.Entries(CurrentUserId).Where(o => !o.Completed);
 
 			if (id != null)
 				entries = entries.Where(o => o.Id == id);
@@ -53,6 +53,9 @@ namespace SimpleToDoService
 		{
 			if (!id.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Id not specified" });
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
 			entry.Id = id.Value;
 			entry.UserId = CurrentUserId;
