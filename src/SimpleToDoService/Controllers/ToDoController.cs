@@ -24,7 +24,7 @@ namespace SimpleToDoService
 		[HttpGet("{id:int?}", Name = "GetToDoEntry")]
 		public IEnumerable<ToDoEntry> Get(int? id)
 		{
-			var entries = repository.Entries(CurrentUserId).Where(o => !o.Completed);
+			var entries = repository.Entries(CurrentUserId).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 
 			if (id != null)
 				entries = entries.Where(o => o.Id == id);

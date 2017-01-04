@@ -1,6 +1,9 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Runtime.Serialization;
+using System.Xml.Serialization;
+using Newtonsoft.Json;
 
 namespace SimpleToDoService.Entities
 {
@@ -33,7 +36,6 @@ namespace SimpleToDoService.Entities
 		public string Password { get; set; }
 	}
 
-
 	[Table("todoentry")]
 	public class ToDoEntry
 	{
@@ -54,6 +56,21 @@ namespace SimpleToDoService.Entities
 		[MaxLength(4000)]
 		public string Notes { get; set; }
 
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Column("creationdate")]
+		public DateTime CreationDate { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Column("completeddate")]
+		public DateTime? CompletedDate { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		[Column("owner")]
 		[ForeignKey("User")]
 		public int UserId { get; set; }

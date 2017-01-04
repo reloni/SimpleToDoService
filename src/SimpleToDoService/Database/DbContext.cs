@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using SimpleToDoService.Entities;
 
 namespace SimpleToDoService.Context
@@ -12,6 +13,7 @@ namespace SimpleToDoService.Context
 		int SaveChanges();
 
 		ToDoEntry UpdateToDoEntry(ToDoEntry entry);
+		EntityEntry<TEntity> Entry<TEntity>(TEntity entry) where TEntity : class;
 	}
 
 	public class ToDoDbContext : DbContext, IToDoDbContext
