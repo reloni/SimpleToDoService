@@ -32,6 +32,11 @@ namespace SimpleToDoService
 			return entries;
 		}
 
+		[HttpGet("All")]
+		public IEnumerable<ToDoEntry> GetAll()
+		{
+			return repository.Entries(CurrentUserId);
+		}
 
 		[HttpPost]
 		public IActionResult Post([FromBody] ToDoEntry entry)
