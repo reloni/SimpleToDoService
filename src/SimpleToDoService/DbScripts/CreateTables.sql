@@ -11,7 +11,7 @@ Id serial PRIMARY KEY,
 Completed BOOL NOT NULL,
 Description varchar(255) NOT NULL,
 Notes varchar(4000),
-CreationDate timestamp NOT NULL,
-CompletedDate timestamp,
+CreationDate timestamptz NOT NULL,
+TargetDate timestamptz,
 Owner serial REFERENCES ToDoUser (id)
 );

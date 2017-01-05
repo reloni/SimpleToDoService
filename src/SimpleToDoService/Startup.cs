@@ -32,6 +32,7 @@ namespace SimpleToDoService
 			        .AddXmlDataContractSerializerFormatters()
 			        .AddJsonOptions(o =>
 					{
+						o.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
 						o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 					});

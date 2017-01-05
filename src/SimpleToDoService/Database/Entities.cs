@@ -62,11 +62,8 @@ namespace SimpleToDoService.Entities
 		[Column("creationdate")]
 		public DateTime CreationDate { get; set; }
 
-		[XmlIgnore]
-		[JsonIgnore]
-		[IgnoreDataMember]
-		[Column("completeddate")]
-		public DateTime? CompletedDate { get; set; }
+		[Column("targetdate")]
+		public DateTime? TargetDate { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]
@@ -75,6 +72,9 @@ namespace SimpleToDoService.Entities
 		[ForeignKey("User")]
 		public int UserId { get; set; }
 
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public User User { get; set; }
 	}
 }
