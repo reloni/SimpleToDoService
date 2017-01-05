@@ -81,5 +81,19 @@ namespace SimpleToDoService
 
 			return new NotFoundResult();
 		}
+
+		[HttpPost("{id:int}/ChangeCompletionStatus/")]
+		public IActionResult ChangeCompletionStatus(int id, [FromQuery] bool completed)
+		{
+			var entry = repository.Entry(CurrentUserId, id);
+
+			if (entry == null)
+				return new NotFoundResult();
+
+			entry.Completed = completed;
+			repository.UpdateEntry(entry);
+
+			return Ok(entry);
+		}
 	}
 }
