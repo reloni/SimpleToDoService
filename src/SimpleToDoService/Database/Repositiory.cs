@@ -44,6 +44,7 @@ namespace SimpleToDoService.Repository
 
 		public ToDoEntry CreateEntry(ToDoEntry entry)
 		{
+			entry.CreationDate = DateTime.Now.ToUniversalTime();
 			var entity = context.ToDoEntries.Add(entry);
 
 			if(context.SaveChanges() == 1)
@@ -55,7 +56,7 @@ namespace SimpleToDoService.Repository
 		public ToDoEntry UpdateEntry(ToDoEntry entry)
 		{
 			var updated = context.UpdateToDoEntry(entry);
-
+			context.Entry(entry).Property(p => p.CreationDate).IsModified = false;
 			if(context.SaveChanges() == 1)
 				return updated;
 

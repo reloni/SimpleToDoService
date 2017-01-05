@@ -24,7 +24,7 @@ namespace SimpleToDoService
 		[HttpGet("{id:int?}", Name = "GetToDoEntry")]
 		public IEnumerable<ToDoEntry> Get(int? id)
 		{
-			var entries = repository.Entries(CurrentUserId);
+			var entries = repository.Entries(CurrentUserId).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 
 			if (id != null)
 				entries = entries.Where(o => o.Id == id);
@@ -32,6 +32,11 @@ namespace SimpleToDoService
 			return entries;
 		}
 
+		[HttpGet("All")]
+		public IEnumerable<ToDoEntry> GetAll()
+		{
+			return repository.Entries(CurrentUserId);
+		}
 
 		[HttpPost]
 		public IActionResult Post([FromBody] ToDoEntry entry)
@@ -53,6 +58,9 @@ namespace SimpleToDoService
 		{
 			if (!id.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Id not specified" });
+
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
 
 			entry.Id = id.Value;
 			entry.UserId = CurrentUserId;
@@ -77,6 +85,20 @@ namespace SimpleToDoService
 				return new StatusCodeResult(204);
 
 			return new NotFoundResult();
+		}
+
+		[HttpPost("{id:int}/ChangeCompletionStatus/")]
+		public IActionResult ChangeCompletionStatus(int id, [FromQuery] bool completed)
+		{
+			var entry = repository.Entry(CurrentUserId, id);
+
+			if (entry == null)
+				return new NotFoundResult();
+
+			entry.Completed = completed;
+			repository.UpdateEntry(entry);
+
+			return Ok(entry);
 		}
 	}
 }
