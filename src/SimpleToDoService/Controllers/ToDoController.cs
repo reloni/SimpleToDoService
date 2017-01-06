@@ -34,9 +34,14 @@ namespace SimpleToDoService
 		}
 
 		[HttpGet("All")]
-		public IEnumerable<ToDoEntry> GetAll()
+		public IEnumerable<ToDoEntry> GetAll([FromQuery] bool? completed)
 		{
-			return repository.Entries(CurrentUserUuid).OrderBy(o => o.CreationDate);
+			var entries = repository.Entries(CurrentUserUuid).OrderBy(o => o.CreationDate);
+
+			if (completed.HasValue)
+				return entries.Where(o => o.Completed == completed.Value);
+
+			return entries;
 		}
 
 		[HttpPost]
