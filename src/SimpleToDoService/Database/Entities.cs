@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 
 namespace SimpleToDoService.Entities
 {
-	[Table("todouser")]
+	[Table("taskuser")]
 	public class User
 	{
 		[Key]
@@ -36,7 +36,7 @@ namespace SimpleToDoService.Entities
 		public string Password { get; set; }
 	}
 
-	[Table("todoentry")]
+	[Table("task")]
 	public class ToDoEntry
 	{
 		[Key]
