@@ -11,11 +11,11 @@ namespace SimpleToDoService.Repository
 	{
 		IEnumerable<User> Users();
 		User User(Guid uuid);
-		IEnumerable<ToDoEntry> Entries(Guid userUuid);
-		ToDoEntry Entry(Guid userUuid, Guid entryUuid);
-		ToDoEntry CreateEntry(ToDoEntry entry);
-		ToDoEntry UpdateEntry(ToDoEntry entry);
-		bool DeleteEntry(Guid uuid);
+		IEnumerable<Task> Tasks(Guid userUuid);
+		Task Task(Guid userUuid, Guid taskUuid);
+		Task CreateTask(Task task);
+		Task UpdateTask(Task task);
+		bool DeleteTask(Guid uuid);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -27,9 +27,9 @@ namespace SimpleToDoService.Repository
 			this.context = context;
 		}
 
-		public IEnumerable<ToDoEntry> Entries(Guid userUuid)
+		public IEnumerable<Task> Tasks(Guid userUuid)
 		{
-			return context.ToDoEntries.Where(o => o.User.Uuid == userUuid);
+			return context.Tasks.Where(o => o.User.Uuid == userUuid);
 		}
 
 		public IEnumerable<User> Users()
@@ -37,16 +37,16 @@ namespace SimpleToDoService.Repository
 			return context.Users;
 		}
 
-		public ToDoEntry Entry(Guid userUuid, Guid entryUuid)
+		public Task Task(Guid userUuid, Guid entryUuid)
 		{
-			return context.ToDoEntries.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid).FirstOrDefault();
+			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid).FirstOrDefault();
 		}
 
-		public ToDoEntry CreateEntry(ToDoEntry entry)
+		public Task CreateTask(Task task)
 		{
-			entry.Uuid = new Guid();
-			entry.CreationDate = DateTime.Now.ToUniversalTime();
-			var entity = context.ToDoEntries.Add(entry);
+			task.Uuid = new Guid();
+			task.CreationDate = DateTime.Now.ToUniversalTime();
+			var entity = context.Tasks.Add(task);
 
 			if(context.SaveChanges() == 1)
 				return entity.Entity;
@@ -54,10 +54,10 @@ namespace SimpleToDoService.Repository
 			return null;
 		}
 
-		public ToDoEntry UpdateEntry(ToDoEntry entry)
+		public Task UpdateTask(Task task)
 		{
-			var updated = context.UpdateToDoEntry(entry);
-			context.Entry(entry).Property(p => p.CreationDate).IsModified = false;
+			var updated = context.UpdateTask(task);
+			context.Entry(task).Property(p => p.CreationDate).IsModified = false;
 			if(context.SaveChanges() == 1)
 				return updated;
 
@@ -69,11 +69,11 @@ namespace SimpleToDoService.Repository
 			return context.Users.Where(o => o.Uuid == uuid).FirstOrDefault();
 		}
 
-		public bool DeleteEntry(Guid uuid)
+		public bool DeleteTask(Guid uuid)
 		{
-			var entry = new ToDoEntry() { Uuid = uuid };
-			context.ToDoEntries.Attach(entry);
-			context.ToDoEntries.Remove(entry);
+			var task = new Task() { Uuid = uuid };
+			context.Tasks.Attach(task);
+			context.Tasks.Remove(task);
 			try
 			{
 				context.SaveChanges();

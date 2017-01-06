@@ -37,7 +37,7 @@ namespace SimpleToDoService.Entities
 	}
 
 	[Table("task")]
-	public class ToDoEntry
+	public class Task
 	{
 		[Key]
 		[Column("uuid")]

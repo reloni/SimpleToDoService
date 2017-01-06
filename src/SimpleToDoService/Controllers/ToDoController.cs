@@ -23,9 +23,9 @@ namespace SimpleToDoService
 		}
 
 		[HttpGet("{uuid:Guid?}", Name = "GetToDoEntry")]
-		public IEnumerable<ToDoEntry> Get(Guid? uuid)
+		public IEnumerable<Task> Get(Guid? uuid)
 		{
-			var entries = repository.Entries(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
+			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
@@ -34,9 +34,9 @@ namespace SimpleToDoService
 		}
 
 		[HttpGet("All")]
-		public IEnumerable<ToDoEntry> GetAll([FromQuery] bool? completed)
+		public IEnumerable<Task> GetAll([FromQuery] bool? completed)
 		{
-			var entries = repository.Entries(CurrentUserUuid).OrderBy(o => o.CreationDate);
+			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate);
 
 			if (completed.HasValue)
 				return entries.Where(o => o.Completed == completed.Value);
@@ -45,7 +45,7 @@ namespace SimpleToDoService
 		}
 
 		[HttpPost]
-		public IActionResult Post([FromBody] ToDoEntry entry)
+		public IActionResult Post([FromBody] Task entry)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -55,12 +55,12 @@ namespace SimpleToDoService
 
 			entry.UserUuid = CurrentUserUuid;
 			//entry.Id = 0;
-			var created = repository.CreateEntry(entry);
+			var created = repository.CreateTask(entry);
 			return CreatedAtRoute("GetToDoEntry", new { Uuid = created.Uuid }, created);
 		}
 
 		[HttpPut("{uuid:Guid?}")]
-		public IActionResult Put(Guid? uuid, [FromBody] ToDoEntry entry)
+		public IActionResult Put(Guid? uuid, [FromBody] Task entry)
 		{
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
@@ -71,7 +71,7 @@ namespace SimpleToDoService
 			entry.Uuid = uuid.Value;
 			entry.UserUuid = CurrentUserUuid;
 
-			var updated = repository.UpdateEntry(entry);
+			var updated = repository.UpdateTask(entry);
 
 			if (updated == null)
 				return NotFound(entry);
@@ -85,7 +85,7 @@ namespace SimpleToDoService
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
 
-			var deleted = repository.DeleteEntry(uuid.Value);
+			var deleted = repository.DeleteTask(uuid.Value);
 
 			if (deleted)
 				return new StatusCodeResult(204);
@@ -96,13 +96,13 @@ namespace SimpleToDoService
 		[HttpPost("{uuid:Guid}/ChangeCompletionStatus/")]
 		public IActionResult ChangeCompletionStatus(Guid uuid, [FromQuery] bool completed)
 		{
-			var entry = repository.Entry(CurrentUserUuid, uuid);
+			var entry = repository.Task(CurrentUserUuid, uuid);
 
 			if (entry == null)
 				return new NotFoundResult();
 
 			entry.Completed = completed;
-			repository.UpdateEntry(entry);
+			repository.UpdateTask(entry);
 
 			return Ok(entry);
 		}
