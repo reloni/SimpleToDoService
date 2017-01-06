@@ -26,7 +26,7 @@ namespace SimpleToDoService.Context
 
 		public ToDoEntry UpdateToDoEntry(ToDoEntry entry)
 		{
-			if(ToDoEntries.Where(o => o.Id == entry.Id).Count() == 1)
+			if(ToDoEntries.Where(o => o.Uuid == entry.Uuid).Count() == 1)
 				return Update(entry).Entity;
 
 			return null;

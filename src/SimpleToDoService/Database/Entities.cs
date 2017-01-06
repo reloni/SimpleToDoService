@@ -40,8 +40,8 @@ namespace SimpleToDoService.Entities
 	public class ToDoEntry
 	{
 		[Key]
-		[Column("id")]
-		public int Id { get; set; }
+		[Column("uuid")]
+		public Guid Uuid { get; set; }
 
 		[Column("completed")]
 		[Required]

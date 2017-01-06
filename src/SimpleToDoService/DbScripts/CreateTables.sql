@@ -7,7 +7,7 @@ Password varchar(255) NOT NULL
 );
 
 CREATE TABLE ToDoEntry (
-Id serial PRIMARY KEY,
+UUID UUID PRIMARY KEY,
 Completed BOOL NOT NULL,
 Description varchar(255) NOT NULL,
 Notes varchar(4000),

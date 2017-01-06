@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Entities;
@@ -21,13 +22,13 @@ namespace SimpleToDoService
 			this.repository = repository;
 		}
 
-		[HttpGet("{id:int?}", Name = "GetToDoEntry")]
-		public IEnumerable<ToDoEntry> Get(int? id)
+		[HttpGet("{uuid:Guid?}", Name = "GetToDoEntry")]
+		public IEnumerable<ToDoEntry> Get(Guid? uuid)
 		{
 			var entries = repository.Entries(CurrentUserId).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 
-			if (id != null)
-				entries = entries.Where(o => o.Id == id);
+			if (uuid != null)
+				entries = entries.Where(o => o.Uuid == uuid);
 
 			return entries;
 		}
@@ -35,7 +36,7 @@ namespace SimpleToDoService
 		[HttpGet("All")]
 		public IEnumerable<ToDoEntry> GetAll()
 		{
-			return repository.Entries(CurrentUserId);
+			return repository.Entries(CurrentUserId).OrderBy(o => o.CreationDate);
 		}
 
 		[HttpPost]
@@ -48,21 +49,21 @@ namespace SimpleToDoService
 				return BadRequest();
 
 			entry.UserId = CurrentUserId;
-			entry.Id = 0;
+			//entry.Id = 0;
 			var created = repository.CreateEntry(entry);
-			return CreatedAtRoute("GetToDoEntry", new { Id = created.Id }, created);
+			return CreatedAtRoute("GetToDoEntry", new { Uuid = created.Uuid }, created);
 		}
 
-		[HttpPut("{id:int?}")]
-		public IActionResult Put(int? id, [FromBody] ToDoEntry entry)
+		[HttpPut("{uuid:Guid?}")]
+		public IActionResult Put(Guid? uuid, [FromBody] ToDoEntry entry)
 		{
-			if (!id.HasValue)
-				return BadRequest(new ServiceError() { Message = "Object Id not specified" });
+			if (!uuid.HasValue)
+				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
 
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
 
-			entry.Id = id.Value;
+			entry.Uuid = uuid.Value;
 			entry.UserId = CurrentUserId;
 
 			var updated = repository.UpdateEntry(entry);
@@ -73,13 +74,13 @@ namespace SimpleToDoService
 			return Ok(updated);
 		}
 
-		[HttpDelete("{id:int?}")]
-		public IActionResult Delete(int? id)
+		[HttpDelete("{uuid:Guid?}")]
+		public IActionResult Delete(Guid? uuid)
 		{
-			if (!id.HasValue)
-				return BadRequest(new ServiceError() { Message = "Object Id not specified" });
+			if (!uuid.HasValue)
+				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
 
-			var deleted = repository.DeleteEntry(id.Value);
+			var deleted = repository.DeleteEntry(uuid.Value);
 
 			if (deleted)
 				return new StatusCodeResult(204);
@@ -87,10 +88,10 @@ namespace SimpleToDoService
 			return new NotFoundResult();
 		}
 
-		[HttpPost("{id:int}/ChangeCompletionStatus/")]
-		public IActionResult ChangeCompletionStatus(int id, [FromQuery] bool completed)
+		[HttpPost("{uuid:Guid}/ChangeCompletionStatus/")]
+		public IActionResult ChangeCompletionStatus(Guid uuid, [FromQuery] bool completed)
 		{
-			var entry = repository.Entry(CurrentUserId, id);
+			var entry = repository.Entry(CurrentUserId, uuid);
 
 			if (entry == null)
 				return new NotFoundResult();

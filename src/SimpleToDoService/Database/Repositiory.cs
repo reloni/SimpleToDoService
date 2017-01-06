@@ -12,10 +12,10 @@ namespace SimpleToDoService.Repository
 		IEnumerable<User> Users();
 		User User(int id);
 		IEnumerable<ToDoEntry> Entries(int userId);
-		ToDoEntry Entry(int userId, int entryId);
+		ToDoEntry Entry(int userId, Guid entryUuid);
 		ToDoEntry CreateEntry(ToDoEntry entry);
 		ToDoEntry UpdateEntry(ToDoEntry entry);
-		bool DeleteEntry(int id);
+		bool DeleteEntry(Guid uuid);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -37,13 +37,14 @@ namespace SimpleToDoService.Repository
 			return context.Users;
 		}
 
-		public ToDoEntry Entry(int userId, int entryId)
+		public ToDoEntry Entry(int userId, Guid entryUuid)
 		{
-			return context.ToDoEntries.Where(o => o.User.Id == userId && o.Id == entryId).FirstOrDefault();
+			return context.ToDoEntries.Where(o => o.User.Id == userId && o.Uuid == entryUuid).FirstOrDefault();
 		}
 
 		public ToDoEntry CreateEntry(ToDoEntry entry)
 		{
+			entry.Uuid = new Guid();
 			entry.CreationDate = DateTime.Now.ToUniversalTime();
 			var entity = context.ToDoEntries.Add(entry);
 
@@ -68,9 +69,9 @@ namespace SimpleToDoService.Repository
 			return context.Users.Where(o => o.Id == id).FirstOrDefault();
 		}
 
-		public bool DeleteEntry(int id)
+		public bool DeleteEntry(Guid uuid)
 		{
-			var entry = new ToDoEntry() { Id = id };
+			var entry = new ToDoEntry() { Uuid = uuid };
 			context.ToDoEntries.Attach(entry);
 			context.ToDoEntries.Remove(entry);
 			try
