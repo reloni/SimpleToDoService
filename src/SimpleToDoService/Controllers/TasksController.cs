@@ -7,8 +7,8 @@ using SimpleToDoService.Repository;
 
 namespace SimpleToDoService
 {
-	[Route("api/[controller]")]
-	public class ToDoEntriesController : Controller
+	[Route("api/v1/[controller]")]
+	public class TasksController : Controller
 	{
 		private readonly IToDoRepository repository;
 
@@ -17,12 +17,12 @@ namespace SimpleToDoService
 			get { return (Guid)HttpContext.Items["UserUuid"]; }
 		}
 
-		public ToDoEntriesController(IToDoRepository repository)
+		public TasksController(IToDoRepository repository)
 		{
 			this.repository = repository;
 		}
 
-		[HttpGet("{uuid:Guid?}", Name = "GetToDoEntry")]
+		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
 		public IEnumerable<Task> Get(Guid? uuid)
 		{
 			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
@@ -54,9 +54,9 @@ namespace SimpleToDoService
 				return BadRequest();
 
 			entry.UserUuid = CurrentUserUuid;
-			//entry.Id = 0;
+
 			var created = repository.CreateTask(entry);
-			return CreatedAtRoute("GetToDoEntry", new { Uuid = created.Uuid }, created);
+			return CreatedAtRoute("GetTask", new { Uuid = created.Uuid }, created);
 		}
 
 		[HttpPut("{uuid:Guid?}")]
