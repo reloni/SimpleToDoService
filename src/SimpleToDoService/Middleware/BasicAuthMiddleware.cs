@@ -36,7 +36,7 @@ namespace SimpleToDoService.Middleware
 
 				if (currentUser != null)
 				{
-					context.Items.Add("UserId", currentUser.Id);
+					context.Items.Add("UserUuid", currentUser.Uuid);
 				}
 				else
 				{

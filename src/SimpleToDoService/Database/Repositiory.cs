@@ -10,9 +10,9 @@ namespace SimpleToDoService.Repository
 	public interface IToDoRepository
 	{
 		IEnumerable<User> Users();
-		User User(int id);
-		IEnumerable<ToDoEntry> Entries(int userId);
-		ToDoEntry Entry(int userId, Guid entryUuid);
+		User User(Guid uuid);
+		IEnumerable<ToDoEntry> Entries(Guid userUuid);
+		ToDoEntry Entry(Guid userUuid, Guid entryUuid);
 		ToDoEntry CreateEntry(ToDoEntry entry);
 		ToDoEntry UpdateEntry(ToDoEntry entry);
 		bool DeleteEntry(Guid uuid);
@@ -27,9 +27,9 @@ namespace SimpleToDoService.Repository
 			this.context = context;
 		}
 
-		public IEnumerable<ToDoEntry> Entries(int userId)
+		public IEnumerable<ToDoEntry> Entries(Guid userUuid)
 		{
-			return context.ToDoEntries.Where(o => o.User.Id == userId);
+			return context.ToDoEntries.Where(o => o.User.Uuid == userUuid);
 		}
 
 		public IEnumerable<User> Users()
@@ -37,9 +37,9 @@ namespace SimpleToDoService.Repository
 			return context.Users;
 		}
 
-		public ToDoEntry Entry(int userId, Guid entryUuid)
+		public ToDoEntry Entry(Guid userUuid, Guid entryUuid)
 		{
-			return context.ToDoEntries.Where(o => o.User.Id == userId && o.Uuid == entryUuid).FirstOrDefault();
+			return context.ToDoEntries.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid).FirstOrDefault();
 		}
 
 		public ToDoEntry CreateEntry(ToDoEntry entry)
@@ -64,9 +64,9 @@ namespace SimpleToDoService.Repository
 			return null;
 		}
 
-		public User User(int id)
+		public User User(Guid uuid)
 		{
-			return context.Users.Where(o => o.Id == id).FirstOrDefault();
+			return context.Users.Where(o => o.Uuid == uuid).FirstOrDefault();
 		}
 
 		public bool DeleteEntry(Guid uuid)

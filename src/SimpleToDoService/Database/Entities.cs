@@ -11,9 +11,9 @@ namespace SimpleToDoService.Entities
 	public class User
 	{
 		[Key]
-		[Column("id")]
+		[Column("uuid")]
 		[Required]
-		public int Id { get; set; }
+		public Guid Uuid { get; set; }
 
 		[MaxLength(255)]
 		[Column("firstname")]
@@ -70,7 +70,7 @@ namespace SimpleToDoService.Entities
 		[IgnoreDataMember]
 		[Column("owner")]
 		[ForeignKey("User")]
-		public int UserId { get; set; }
+		public Guid UserUuid { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]

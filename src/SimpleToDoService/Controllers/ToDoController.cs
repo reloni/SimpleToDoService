@@ -12,9 +12,9 @@ namespace SimpleToDoService
 	{
 		private readonly IToDoRepository repository;
 
-		public int CurrentUserId
+		public Guid CurrentUserUuid
 		{
-			get { return (int)HttpContext.Items["UserId"]; }
+			get { return (Guid)HttpContext.Items["UserUuid"]; }
 		}
 
 		public ToDoEntriesController(IToDoRepository repository)
@@ -25,7 +25,7 @@ namespace SimpleToDoService
 		[HttpGet("{uuid:Guid?}", Name = "GetToDoEntry")]
 		public IEnumerable<ToDoEntry> Get(Guid? uuid)
 		{
-			var entries = repository.Entries(CurrentUserId).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
+			var entries = repository.Entries(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
@@ -36,7 +36,7 @@ namespace SimpleToDoService
 		[HttpGet("All")]
 		public IEnumerable<ToDoEntry> GetAll()
 		{
-			return repository.Entries(CurrentUserId).OrderBy(o => o.CreationDate);
+			return repository.Entries(CurrentUserUuid).OrderBy(o => o.CreationDate);
 		}
 
 		[HttpPost]
@@ -48,7 +48,7 @@ namespace SimpleToDoService
 			if (entry == null)
 				return BadRequest();
 
-			entry.UserId = CurrentUserId;
+			entry.UserUuid = CurrentUserUuid;
 			//entry.Id = 0;
 			var created = repository.CreateEntry(entry);
 			return CreatedAtRoute("GetToDoEntry", new { Uuid = created.Uuid }, created);
@@ -64,7 +64,7 @@ namespace SimpleToDoService
 				return BadRequest(ModelState);
 
 			entry.Uuid = uuid.Value;
-			entry.UserId = CurrentUserId;
+			entry.UserUuid = CurrentUserUuid;
 
 			var updated = repository.UpdateEntry(entry);
 
@@ -91,7 +91,7 @@ namespace SimpleToDoService
 		[HttpPost("{uuid:Guid}/ChangeCompletionStatus/")]
 		public IActionResult ChangeCompletionStatus(Guid uuid, [FromQuery] bool completed)
 		{
-			var entry = repository.Entry(CurrentUserId, uuid);
+			var entry = repository.Entry(CurrentUserUuid, uuid);
 
 			if (entry == null)
 				return new NotFoundResult();
