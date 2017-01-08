@@ -7,6 +7,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using SimpleToDoService.Repository;
 using SimpleToDoService.Context;
+using Microsoft.AspNetCore.Builder;
 
 namespace SimpleToDoService.Middleware
 {
@@ -15,10 +16,17 @@ namespace SimpleToDoService.Middleware
 		private readonly RequestDelegate next;
 		private IToDoRepository repository;
 
+		public BasicAuthMiddleware() { }
+
 		public BasicAuthMiddleware(RequestDelegate next, IToDoRepository repository)
 		{
 			this.next = next;
 			this.repository = repository;
+		}
+
+		public void Configure(IApplicationBuilder applicationBuilder)
+		{
+			applicationBuilder.UseMiddleware<BasicAuthMiddleware>();
 		}
 
 		public async Task Invoke(HttpContext context)

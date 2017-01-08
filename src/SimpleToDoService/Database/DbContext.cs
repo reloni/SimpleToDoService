@@ -13,6 +13,7 @@ namespace SimpleToDoService.Context
 		int SaveChanges();
 
 		Task UpdateTask(Task entry);
+		User UpdateUser(User user);
 		EntityEntry<TEntity> Entry<TEntity>(TEntity entry) where TEntity : class;
 	}
 
@@ -28,6 +29,14 @@ namespace SimpleToDoService.Context
 		{
 			if(Tasks.Where(o => o.Uuid == task.Uuid).Count() == 1)
 				return Update(task).Entity;
+
+			return null;
+		}
+
+		public User UpdateUser(User user)
+		{
+			if (Users.Where(o => o.Uuid == user.Uuid).Count() == 1)
+				return Update(user).Entity;
 
 			return null;
 		}

@@ -33,7 +33,16 @@ namespace SimpleToDoService.Entities
 		[MaxLength(255)]
 		[Column("password")]
 		[Required]
+		//[XmlIgnore]
+		//[JsonIgnore]
+		//[IgnoreDataMember]
 		public string Password { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Column("creationdate")]
+		public DateTime CreationDate { get; set; }
 	}
 
 	[Table("task")]

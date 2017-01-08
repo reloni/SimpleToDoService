@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Entities;
+using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
 
 namespace SimpleToDoService
 {
+	[MiddlewareFilter(typeof(BasicAuthMiddleware))]
 	[Route("api/v1/[controller]")]
 	public class TasksController : Controller
 	{

@@ -16,6 +16,9 @@ namespace SimpleToDoService.Repository
 		Task CreateTask(Task task);
 		Task UpdateTask(Task task);
 		bool DeleteTask(Guid uuid);
+		User CreateUser(User user);
+		bool DeleteUser(User user);
+		User UpdateUser(User user);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -84,6 +87,47 @@ namespace SimpleToDoService.Repository
 				return false;
 			}
 			return true;
+		}
+
+		public User CreateUser(User user)
+		{
+			if (Users().Where(o => o.Email == user.Email).Count() > 0)
+				throw new EmailExistedException();
+
+			user.Uuid = new Guid();
+			user.CreationDate = DateTime.Now.ToUniversalTime();
+			var entity = context.Users.Add(user);
+
+			if (context.SaveChanges() == 1)
+				return entity.Entity;
+
+			return null;
+		}
+
+		public bool DeleteUser(User user)
+		{
+			context.Users.Remove(user);
+
+			try
+			{
+				context.SaveChanges();
+			}
+			catch
+			{
+				return false;
+			}
+
+			return true;
+		}
+
+		public User UpdateUser(User user)
+		{
+			var updated = context.UpdateUser(user);
+			context.Entry(user).Property(p => p.CreationDate).IsModified = false;
+			if (context.SaveChanges() == 1)
+				return updated;
+
+			return null;
 		}
 	}
 }
