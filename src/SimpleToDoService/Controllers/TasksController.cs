@@ -34,14 +34,17 @@ namespace SimpleToDoService
 		}
 
 		[HttpGet("All")]
-		public IEnumerable<Task> GetAll([FromQuery] bool? completed)
+		public IEnumerable<Task> GetAll([FromQuery] bool? completed,[FromQuery] int offset = 0,[FromQuery] int count = 20)
 		{
-			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate);
+			IEnumerable<Task> entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate);
 
 			if (completed.HasValue)
-				return entries.Where(o => o.Completed == completed.Value);
+				entries = entries.Where(o => o.Completed == completed.Value);
 
-			return entries;
+			var totalCount = entries.Count();
+			Response.Headers.Add("X-ItemsCount", totalCount.ToString());
+
+			return entries.Skip(offset).Take(count);
 		}
 
 		[HttpPost]
