@@ -74,6 +74,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="DbScripts\CreateTables.sql" />
+    <None Include="DbScripts\CreateUser.sql" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />

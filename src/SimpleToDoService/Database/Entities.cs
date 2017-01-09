@@ -7,13 +7,13 @@ using Newtonsoft.Json;
 
 namespace SimpleToDoService.Entities
 {
-	[Table("todouser")]
+	[Table("taskuser")]
 	public class User
 	{
 		[Key]
-		[Column("id")]
+		[Column("uuid")]
 		[Required]
-		public int Id { get; set; }
+		public Guid Uuid { get; set; }
 
 		[MaxLength(255)]
 		[Column("firstname")]
@@ -33,15 +33,24 @@ namespace SimpleToDoService.Entities
 		[MaxLength(255)]
 		[Column("password")]
 		[Required]
+		//[XmlIgnore]
+		//[JsonIgnore]
+		//[IgnoreDataMember]
 		public string Password { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Column("creationdate")]
+		public DateTime CreationDate { get; set; }
 	}
 
-	[Table("todoentry")]
-	public class ToDoEntry
+	[Table("task")]
+	public class Task
 	{
 		[Key]
-		[Column("id")]
-		public int Id { get; set; }
+		[Column("uuid")]
+		public Guid Uuid { get; set; }
 
 		[Column("completed")]
 		[Required]
@@ -70,7 +79,7 @@ namespace SimpleToDoService.Entities
 		[IgnoreDataMember]
 		[Column("owner")]
 		[ForeignKey("User")]
-		public int UserId { get; set; }
+		public Guid UserUuid { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]

@@ -54,7 +54,7 @@ namespace SimpleToDoService
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseMiddleware<BasicAuthMiddleware>();
+			//app.UseMiddleware<BasicAuthMiddleware>();
 
 			app.UseMvc();
 		}
