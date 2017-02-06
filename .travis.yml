@@ -5,6 +5,10 @@ services:
 
 language: generic
 
+before_install:
+  - pip install --user awscli
+  - export PATH=$PATH:$HOME/.local/bin
+
 script:
 #  - if [ "$TRAVIS_TAG" != "" ]; then
 #    docker run -it --rm -v $TRAVIS_BUILD_DIR:/sources microsoft/dotnet:1.1.0-sdk-msbuild bash /sources/scripts/PublishDebug.sh;
