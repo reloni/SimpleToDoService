@@ -13,7 +13,7 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   eval "$(cat login)"
   export REPO=${DOCKER_AWS_REPONAME}
   export TAG=empty-${TRAVIS_TAG}
-  docker build -f Dockerfile.empty -t $REPO:$TAG --label Postgres=${DBVersion} .
+  docker build -f Dockerfile.debug -t $REPO:$TAG .
   docker tag $REPO:$TAG $REPO:latest
   docker push $REPO > PushLog.log
   echo "AWS push log ===="
@@ -23,7 +23,7 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   #push to docker-hub
   docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
   export REPO=reloni/todo-service
-  docker build -f Dockerfile.empty -t $REPO:$TAG --label Postgres=${DBVersion} .
+  docker build -f Dockerfile.debug -t $REPO:$TAG .
   docker tag $REPO:$TAG $REPO:latest
   docker push $REPO > PushLog.log
   echo "Docker hub push log ===="
