@@ -39,8 +39,12 @@ namespace SimpleToDoService
 
 
 
-			var connectionString = Configuration[string.Format("DbContextSettings:{0}", 
-			                                                   Environment.GetEnvironmentVariable("db-connection-string"))];
+			var connectionString = Configuration["DbContextSettings:ConnectionString_Postgres"];
+			connectionString = connectionString.Replace("{USER_ID}", Environment.GetEnvironmentVariable("POSTGRES_USER"))
+			                                   .Replace("{PASSWORD}", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"))
+			                                   .Replace("{DB}", Environment.GetEnvironmentVariable("POSTGRES_DB"))
+			                                   .Replace("{HOST}", Environment.GetEnvironmentVariable("POSTGRES_HOST"))
+			                                   .Replace("{PORT}", Environment.GetEnvironmentVariable("POSTGRES_PORT"));
 
 			services.AddDbContext<ToDoDbContext>(opts => opts.UseNpgsql(connectionString));
 			services.AddScoped<IToDoDbContext, ToDoDbContext>();
