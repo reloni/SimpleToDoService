@@ -37,8 +37,6 @@ namespace SimpleToDoService
 						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 					});
 
-
-
 			var connectionString = Configuration["DbContextSettings:ConnectionString_Postgres"];
 			connectionString = connectionString.Replace("{USER_ID}", Environment.GetEnvironmentVariable("POSTGRES_USER"))
 			                                   .Replace("{PASSWORD}", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"))
