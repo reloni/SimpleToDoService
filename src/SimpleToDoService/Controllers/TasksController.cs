@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Entities;
 using SimpleToDoService.Middleware;
@@ -8,7 +10,8 @@ using SimpleToDoService.Repository;
 
 namespace SimpleToDoService
 {
-	[MiddlewareFilter(typeof(BasicAuthMiddleware))]
+	[Authorize]
+	//[MiddlewareFilter(typeof(BasicAuthMiddleware))]
 	[Route("api/v1/[controller]")]
 	public class TasksController : Controller
 	{
@@ -27,6 +30,10 @@ namespace SimpleToDoService
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
 		public IEnumerable<Task> Get(Guid? uuid)
 		{
+			// Get the user's ID
+			//string userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+			//string email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
+
 			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 
 			if (uuid != null)
