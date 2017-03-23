@@ -21,7 +21,7 @@ namespace SimpleToDoService
 			this.repository = repository;
 		}
 
-		[MiddlewareFilter(typeof(BasicAuthMiddleware))]
+		//[MiddlewareFilter(typeof(BasicAuthMiddleware))]
 		[HttpGet(Name = "GetUserInfo")]
 		public IActionResult Get()
 		{
@@ -33,7 +33,7 @@ namespace SimpleToDoService
 			return Ok(user);
 		}
 
-		[MiddlewareFilter(typeof(BasicAuthMiddleware))]
+		//[MiddlewareFilter(typeof(BasicAuthMiddleware))]
 		[HttpDelete]
 		public IActionResult Delete()
 		{
@@ -71,7 +71,7 @@ namespace SimpleToDoService
 			return CreatedAtRoute("GetUserInfo", created);
 		}
 
-		[MiddlewareFilter(typeof(BasicAuthMiddleware))]
+		//[MiddlewareFilter(typeof(BasicAuthMiddleware))]
 		[HttpPut]
 		public IActionResult Put([FromBody] User user)
 		{

@@ -12,6 +12,7 @@ namespace SimpleToDoService
 {
 	[Authorize]
 	//[MiddlewareFilter(typeof(BasicAuthMiddleware))]
+	[MiddlewareFilter(typeof(CheckUserMiddleware))]
 	[Route("api/v1/[controller]")]
 	public class TasksController : Controller
 	{
@@ -20,6 +21,11 @@ namespace SimpleToDoService
 		public Guid CurrentUserUuid
 		{
 			get { return (Guid)HttpContext.Items["UserUuid"]; }
+		}
+
+		public string CurrentUserFirebaseId
+		{
+			get { return HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value; }
 		}
 
 		public TasksController(IToDoRepository repository)
@@ -31,11 +37,12 @@ namespace SimpleToDoService
 		public IEnumerable<Task> Get(Guid? uuid)
 		{
 			// Get the user's ID
-			//string userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+			var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+			//var userIdGuid = Guid.ParseExact(userId, "N");
 			//string email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-
+			var id = CurrentUserUuid;
 			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
-
+		
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
 

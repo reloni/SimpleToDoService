@@ -1,4 +1,5 @@
 ﻿using System;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Formatters;
@@ -10,6 +11,9 @@ using Microsoft.IdentityModel.Tokens;
 using SimpleToDoService.Context;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
+using System.Linq;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace SimpleToDoService
 {
@@ -61,6 +65,16 @@ namespace SimpleToDoService
 
 			app.UseJwtBearerAuthentication(new JwtBearerOptions
 			{
+				//Events = new JwtBearerEvents()
+				//{
+				//	OnTokenValidated = (arg) =>
+				//	{
+						
+				//		var userId = arg.HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+				//		arg.HttpContext.Items.Add("UserUuid", userId);						
+				//		return Task.FromResult(0);
+				//	}
+				//},
 				AutomaticAuthenticate = true,
 				Authority = "https://securetoken.google.com/simpletaskmanager-9c565",
 				TokenValidationParameters = new TokenValidationParameters
@@ -72,6 +86,8 @@ namespace SimpleToDoService
 					ValidateLifetime = true
 				}
 			});
+
+			app.UseMiddleware<CheckUserMiddleware>();
 
 			app.UseMvc();
 		}
