@@ -1,11 +1,11 @@
 ﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using SimpleToDoService.Context;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
@@ -56,7 +56,21 @@ namespace SimpleToDoService
 				app.UseDeveloperExceptionPage();
 			}
 
-			//app.UseMiddleware<BasicAuthMiddleware>();
+			app.UseJwtBearerAuthentication(new JwtBearerOptions
+			{
+				AutomaticAuthenticate = true,
+				Authority = "https://securetoken.google.com/simpletaskmanager-9c565",
+				TokenValidationParameters = new TokenValidationParameters
+				{
+					ValidateIssuer = true,
+					ValidIssuer = "https://securetoken.google.com/simpletaskmanager-9c565",
+					ValidateAudience = true,
+					ValidAudience = "simpletaskmanager-9c565",
+					ValidateLifetime = true
+				}
+			});
+
+			app.UseMiddleware<CheckUserMiddleware>();
 
 			app.UseMvc();
 		}

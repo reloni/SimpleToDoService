@@ -91,17 +91,12 @@ namespace SimpleToDoService.Repository
 
 		public User CreateUser(User user)
 		{
-			if (Users().Where(o => o.Email == user.Email).Count() > 0)
-				throw new EmailExistedException();
-
 			user.Uuid = new Guid();
 			user.CreationDate = DateTime.Now.ToUniversalTime();
 			var entity = context.Users.Add(user);
 
-			if (context.SaveChanges() == 1)
-				return entity.Entity;
-
-			return null;
+			context.SaveChanges();
+			return entity.Entity;
 		}
 
 		public bool DeleteUser(User user)

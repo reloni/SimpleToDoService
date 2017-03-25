@@ -15,6 +15,12 @@ namespace SimpleToDoService.Entities
 		[Required]
 		public Guid Uuid { get; set; }
 
+		[Column("firebaseid")]
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		public string FirebaseId { get; set; }
+
 		[MaxLength(255)]
 		[Column("firstname")]
 		[Required]
@@ -29,14 +35,6 @@ namespace SimpleToDoService.Entities
 		[Column("email")]
 		[Required]
 		public string Email { get; set; }
-
-		[MaxLength(255)]
-		[Column("password")]
-		[Required]
-		//[XmlIgnore]
-		//[JsonIgnore]
-		//[IgnoreDataMember]
-		public string Password { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]

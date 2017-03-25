@@ -66,14 +66,16 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Xml">
       <Version>1.1.1</Version>
     </PackageReference>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer">
+      <Version>1.1.1</Version>
+    </PackageReference>
   </ItemGroup>
 
   <ItemGroup>
     <None Include="AppSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="DbScripts\CreateTables.sql" />
-    <None Include="DbScripts\CreateUser.sql" />
+    <None Remove="Controllers\UserController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
