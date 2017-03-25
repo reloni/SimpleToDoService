@@ -75,8 +75,7 @@
     <None Include="AppSettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="DbScripts\CreateTables.sql" />
-    <None Include="DbScripts\CreateUser.sql" />
+    <None Remove="Controllers\UserController.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />

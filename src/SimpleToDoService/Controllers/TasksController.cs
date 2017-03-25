@@ -11,7 +11,6 @@ using SimpleToDoService.Repository;
 namespace SimpleToDoService
 {
 	[Authorize]
-	//[MiddlewareFilter(typeof(BasicAuthMiddleware))]
 	[MiddlewareFilter(typeof(CheckUserMiddleware))]
 	[Route("api/v1/[controller]")]
 	public class TasksController : Controller
@@ -36,11 +35,6 @@ namespace SimpleToDoService
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
 		public IEnumerable<Task> Get(Guid? uuid)
 		{
-			// Get the user's ID
-			var userId = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-			//var userIdGuid = Guid.ParseExact(userId, "N");
-			//string email = HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value;
-			var id = CurrentUserUuid;
 			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 		
 			if (uuid != null)
