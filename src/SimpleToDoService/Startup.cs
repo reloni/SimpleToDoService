@@ -27,11 +27,14 @@ namespace SimpleToDoService
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			
 			services.AddMvc()
-			        .AddXmlSerializerFormatters()
-			        .AddXmlDataContractSerializerFormatters()
-			        .AddJsonOptions(o =>
+			        
+				.AddXmlSerializerFormatters()
+				.AddXmlDataContractSerializerFormatters()
+				.AddJsonOptions(o => 
 					{
+						o.SerializerSettings.DateFormatString = "yyyy-MM-dd'T'HH:mm:ss.fffzz";
 						o.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
 						o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
@@ -39,10 +42,10 @@ namespace SimpleToDoService
 
 			var connectionString = Configuration["DbContextSettings:ConnectionString_Postgres"];
 			connectionString = connectionString.Replace("{USER_ID}", Environment.GetEnvironmentVariable("POSTGRES_USER"))
-			                                   .Replace("{PASSWORD}", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"))
-			                                   .Replace("{DB}", Environment.GetEnvironmentVariable("POSTGRES_DB"))
-			                                   .Replace("{HOST}", Environment.GetEnvironmentVariable("POSTGRES_HOST"))
-			                                   .Replace("{PORT}", Environment.GetEnvironmentVariable("POSTGRES_PORT"));
+							   .Replace("{PASSWORD}", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"))
+							   .Replace("{DB}", Environment.GetEnvironmentVariable("POSTGRES_DB"))
+							   .Replace("{HOST}", Environment.GetEnvironmentVariable("POSTGRES_HOST"))
+							   .Replace("{PORT}", Environment.GetEnvironmentVariable("POSTGRES_PORT"));
 
 			services.AddDbContext<ToDoDbContext>(opts => opts.UseNpgsql(connectionString));
 			services.AddScoped<IToDoDbContext, ToDoDbContext>();
