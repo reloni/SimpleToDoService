@@ -72,6 +72,9 @@ namespace SimpleToDoService.Entities
 		[Column("targetdate")]
 		public DateTime? TargetDate { get; set; }
 
+		[Column("targetdateincludetime")]
+		public bool TargetDateIncludeTime { get; set; } = true;
+
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
