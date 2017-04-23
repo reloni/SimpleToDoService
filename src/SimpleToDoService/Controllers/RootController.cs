@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net;
 using System.Net.Security;
 using System.Net.Sockets;
 using System.Security.Authentication;
@@ -7,6 +8,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using System.Text;
+using Newtonsoft.Json.Linq;
 
 namespace SimpleToDoService
 {
@@ -23,6 +26,47 @@ namespace SimpleToDoService
 		[HttpGet]
 		public IActionResult Get()
 		{
+			return Ok();
+		}
+
+		[HttpPost("push2")]
+		public async Task<IActionResult> Push2() 
+		{
+			var request = WebRequest.Create("https://onesignal.com/api/v1/notifications") as HttpWebRequest;
+
+			request.Method = "POST";
+			request.ContentType = "application/json; charset=utf-8";
+			request.Headers["authorization"] = "Basic NTNmZWI0MjktOWI2My00M2FiLTk1ZDQtMDljYjBhMjhhM2Vh";
+
+			var sendJson = JObject.FromObject(new {
+				app_id = "ffe9789a-e9bc-4789-9cbb-4552664ba3fe",
+				contents = new { en = "Test message" },
+				filters = new [] { new { field = "tag", key = "custom", relation = "=", value = "tag" } },
+				send_after = "2017-04-23 17:58:00 GMT+0300"
+			});
+
+			var byteArray = Encoding.UTF8.GetBytes(sendJson.ToString());
+
+			try
+			{
+				using (var writer = await request.GetRequestStreamAsync())
+				{
+					writer.Write(byteArray, 0, byteArray.Length);
+				}
+
+				using (var response = await request.GetResponseAsync())
+				using (var reader = new StreamReader(response.GetResponseStream()))
+				{
+					var json = JObject.Parse(reader.ReadToEnd());
+					System.Diagnostics.Debug.WriteLine(String.Format("id = {0}", json["id"]));
+				}
+			}
+			catch (WebException ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+			}
+
 			return Ok();
 		}
 
