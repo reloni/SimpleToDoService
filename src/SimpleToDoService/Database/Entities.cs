@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
@@ -85,6 +86,50 @@ namespace SimpleToDoService.Entities
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
+		//[ForeignKey("owner")]
 		public User User { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		public IEnumerable<PushNotification> PushNotifications { get; set; }
+	}
+
+	[Table("pushnotification")]
+	public class PushNotification
+	{
+		[Key]
+		[Column("uuid")]
+		public Guid Uuid { get; set; }
+
+		[Column("serviceid")]
+		public Guid ServiceId { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Column("userid")]
+		[ForeignKey("User")]
+		public Guid UserUuid { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		//[ForeignKey("pushnotification_taskid_fkey")]
+		public User User { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Column("taskid")]
+		[ForeignKey("Task")]
+		public Guid TaskUuid { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		//[ForeignKey("pushnotification_userid_fkey")]
+		public User Task { get; set; }
 	}
 }
+

@@ -19,6 +19,7 @@ namespace SimpleToDoService.Repository
 		User CreateUser(User user);
 		bool DeleteUser(User user);
 		User UpdateUser(User user);
+		PushNotification CreatePushNotification(PushNotification notification);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -121,6 +122,18 @@ namespace SimpleToDoService.Repository
 			context.Entry(user).Property(p => p.CreationDate).IsModified = false;
 			if (context.SaveChanges() == 1)
 				return updated;
+
+			return null;
+		}
+
+		public PushNotification CreatePushNotification(PushNotification notification)
+		{
+			notification.Uuid = new Guid();
+
+			var entity = context.PushNotifications.Add(notification);
+
+			if (context.SaveChanges() == 1)
+				return entity.Entity;
 
 			return null;
 		}

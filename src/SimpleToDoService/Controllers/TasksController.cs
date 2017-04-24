@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleToDoService.Common;
 using SimpleToDoService.Entities;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
@@ -58,7 +59,7 @@ namespace SimpleToDoService
 		}
 
 		[HttpPost]
-		public IActionResult Post([FromBody] Task entry)
+		public async System.Threading.Tasks.Task<IActionResult> Post([FromBody] Task entry)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -69,6 +70,10 @@ namespace SimpleToDoService
 			entry.UserUuid = CurrentUserUuid;
 
 			var created = repository.CreateTask(entry);
+
+			var helper = new PushNotificationHelper(repository);
+			helper.SchedulePushNotification(created);
+
 			return CreatedAtRoute("GetTask", new { Uuid = created.Uuid }, created);
 		}
 

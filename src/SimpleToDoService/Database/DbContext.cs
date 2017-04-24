@@ -9,6 +9,7 @@ namespace SimpleToDoService.Context
 	{
 		DbSet<User> Users { get; }
 		DbSet<Task> Tasks { get; }
+		DbSet<PushNotification> PushNotifications { get; }
 
 		int SaveChanges();
 
@@ -24,6 +25,8 @@ namespace SimpleToDoService.Context
 		public DbSet<User> Users { get; set; }
 
 		public DbSet<Task> Tasks { get; set; }
+
+		public DbSet<PushNotification> PushNotifications { get; set; }
 
 		public Task UpdateTask(Task task)
 		{

@@ -42,7 +42,7 @@ namespace SimpleToDoService
 				app_id = "ffe9789a-e9bc-4789-9cbb-4552664ba3fe",
 				contents = new { en = "Test message" },
 				filters = new [] { new { field = "tag", key = "custom", relation = "=", value = "tag" } },
-				send_after = "2017-04-23 17:58:00 GMT+0300"
+				send_after = "2018-04-23 17:58:00 GMT+0300"
 			});
 
 			var byteArray = Encoding.UTF8.GetBytes(sendJson.ToString());
