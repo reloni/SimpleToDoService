@@ -9,25 +9,20 @@ using System.IO;
 
 namespace SimpleToDoService.Common
 {
-    public class PushNotificationHelper
-    {
+	public class PushNotificationHelper
+	{
 		private readonly IToDoRepository repository;
 
 		public PushNotificationHelper(IToDoRepository repository)
 		{
 			this.repository = repository;
 		}
-        
-		public async void SchedulePushNotification(Task task) 
+
+		public async System.Threading.Tasks.Task SchedulePushNotification(Task task)
 		{
-			await System.Threading.Tasks.Task.Factory.StartNew(() => 
-			{
-				var currentNotification = task.PushNotifications.Where(o => o.TaskUuid == task.Uuid).FirstOrDefault();
-
-				DeletePushNotification(currentNotification);
-
-				CreatePushNotification(task);	
-			});
+			var currentNotification = repository.PushNotifications(task).FirstOrDefault();
+			DeletePushNotification(currentNotification);
+			await CreatePushNotification(task);
 		}
 
 		void DeletePushNotification(PushNotification notification)
@@ -36,7 +31,7 @@ namespace SimpleToDoService.Common
 				return;
 		}
 
-		async void CreatePushNotification(Task task)
+		async System.Threading.Tasks.Task CreatePushNotification(Task task)
 		{
 			var notificationDate = TaskDate(task);
 			if (!notificationDate.HasValue)
@@ -53,10 +48,10 @@ namespace SimpleToDoService.Common
 			{
 				app_id = Environment.GetEnvironmentVariable("ONE_SIGNAL_APP_ID"),
 				contents = new { en = task.Description },
-				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = task.UserUuid.ToString() } },
-				send_after = notificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss GMTzzzz")//"2018-04-23 17:58:00 GMT+0300"
+				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = repository.User(task.UserUuid).FirebaseId } },
+				send_after = notificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss 'GMT'zzzz")//"2018-04-23 17:58:00 GMT+0300"
 			});
-			;
+
 			var byteArray = Encoding.UTF8.GetBytes(sendJson.ToString());
 
 			try
@@ -70,7 +65,7 @@ namespace SimpleToDoService.Common
 				using (var reader = new StreamReader(response.GetResponseStream()))
 				{
 					var json = JObject.Parse(reader.ReadToEnd());
-					var notificationId = json["id"].Value<String>();
+					var notificationId = json["id"].ToString();
 					if (notificationId != null && notificationId.Length > 0)
 					{
 						var notification = new PushNotification()
@@ -84,18 +79,22 @@ namespace SimpleToDoService.Common
 					}
 				}
 			}
+#if DEBUG
 			catch (WebException ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
 				System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
 			}
+#else
+			catch { }
+#endif
 		}
 
-		private static DateTime? TaskDate(Task task) 
+		private static DateTime? TaskDate(Task task)
 		{
 			if (!task.TargetDate.HasValue)
 				return null;
-			
+
 			var notificationDate = task.TargetDate.Value.ToUniversalTime();
 
 			if (!task.TargetDateIncludeTime)
@@ -103,5 +102,5 @@ namespace SimpleToDoService.Common
 
 			return task.TargetDate;
 		}
-    }
+	}
 }

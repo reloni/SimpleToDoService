@@ -20,6 +20,7 @@ namespace SimpleToDoService.Repository
 		bool DeleteUser(User user);
 		User UpdateUser(User user);
 		PushNotification CreatePushNotification(PushNotification notification);
+		IEnumerable<PushNotification> PushNotifications(Task task);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -136,6 +137,12 @@ namespace SimpleToDoService.Repository
 				return entity.Entity;
 
 			return null;
+		}
+
+		public IEnumerable<PushNotification> PushNotifications(Task task)
+		{
+			return context.PushNotifications.Where(o => o.TaskUuid == task.Uuid);
+
 		}
 	}
 }

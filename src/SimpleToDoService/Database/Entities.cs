@@ -88,11 +88,6 @@ namespace SimpleToDoService.Entities
 		[IgnoreDataMember]
 		//[ForeignKey("owner")]
 		public User User { get; set; }
-
-		[XmlIgnore]
-		[JsonIgnore]
-		[IgnoreDataMember]
-		public IEnumerable<PushNotification> PushNotifications { get; set; }
 	}
 
 	[Table("pushnotification")]
