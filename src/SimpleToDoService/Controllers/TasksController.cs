@@ -40,7 +40,7 @@ namespace SimpleToDoService
 		
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
-
+			
 			return entries;
 		}
 

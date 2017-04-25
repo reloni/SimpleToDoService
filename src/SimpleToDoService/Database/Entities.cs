@@ -42,6 +42,11 @@ namespace SimpleToDoService.Entities
 		[IgnoreDataMember]
 		[Column("creationdate")]
 		public DateTime CreationDate { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		public IEnumerable<Task> Tasks { get; set; }
 	}
 
 	[Table("task")]
@@ -80,14 +85,15 @@ namespace SimpleToDoService.Entities
 		[JsonIgnore]
 		[IgnoreDataMember]
 		[Column("owner")]
-		[ForeignKey("User")]
 		public Guid UserUuid { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
-		//[ForeignKey("owner")]
+		[ForeignKey("UserUuid")]
 		public User User { get; set; }
+
+		public IEnumerable<PushNotification> PushNotifications { get; set; }
 	}
 
 	[Table("pushnotification")]
@@ -104,27 +110,28 @@ namespace SimpleToDoService.Entities
 		[JsonIgnore]
 		[IgnoreDataMember]
 		[Column("userid")]
-		[ForeignKey("User")]
 		public Guid UserUuid { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
-		//[ForeignKey("pushnotification_taskid_fkey")]
+		[ForeignKey("UserUuid")]
 		public User User { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
 		[Column("taskid")]
-		[ForeignKey("Task")]
 		public Guid TaskUuid { get; set; }
 
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
-		//[ForeignKey("pushnotification_userid_fkey")]
+		[ForeignKey("TaskUuid")]
 		public User Task { get; set; }
+
+		[Column("duedate")]
+		public DateTime DueDate { get; set; }
 	}
 }
 

@@ -34,7 +34,8 @@ namespace SimpleToDoService.Repository
 
 		public IEnumerable<Task> Tasks(Guid userUuid)
 		{
-			return context.Tasks.Where(o => o.User.Uuid == userUuid);
+			return context.Tasks.Where(o => o.User.Uuid == userUuid)
+				          .Include(o => o.PushNotifications);
 		}
 
 		public IEnumerable<User> Users()
@@ -44,13 +45,17 @@ namespace SimpleToDoService.Repository
 
 		public Task Task(Guid userUuid, Guid entryUuid)
 		{
-			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid).FirstOrDefault();
+			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid)
+				          .Include(o => o.User)
+				          .Include(o => o.PushNotifications)
+				          .FirstOrDefault();
 		}
 
 		public Task CreateTask(Task task)
 		{
 			task.Uuid = new Guid();
 			task.CreationDate = DateTime.Now.ToUniversalTime();
+			task.PushNotifications = new List<PushNotification>();
 			var entity = context.Tasks.Add(task);
 
 			if(context.SaveChanges() == 1)

@@ -20,7 +20,7 @@ namespace SimpleToDoService.Common
 
 		public async System.Threading.Tasks.Task SchedulePushNotification(Task task)
 		{
-			var currentNotification = repository.PushNotifications(task).FirstOrDefault();
+			var currentNotification = task.PushNotifications.FirstOrDefault();//repository.PushNotifications(task).FirstOrDefault();
 			DeletePushNotification(currentNotification);
 			await CreatePushNotification(task);
 		}
@@ -49,7 +49,7 @@ namespace SimpleToDoService.Common
 				app_id = Environment.GetEnvironmentVariable("ONE_SIGNAL_APP_ID"),
 				contents = new { en = task.Description },
 				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = repository.User(task.UserUuid).FirebaseId } },
-				send_after = notificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss 'GMT'zzzz")//"2018-04-23 17:58:00 GMT+0300"
+				send_after = notificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss 'GMT'zzzz")
 			});
 
 			var byteArray = Encoding.UTF8.GetBytes(sendJson.ToString());
@@ -72,7 +72,8 @@ namespace SimpleToDoService.Common
 						{
 							ServiceId = new Guid(notificationId),
 							TaskUuid = task.Uuid,
-							UserUuid = task.UserUuid
+							UserUuid = task.UserUuid,
+							DueDate = notificationDate.Value
 						};
 
 						repository.CreatePushNotification(notification);
