@@ -25,14 +25,25 @@ namespace SimpleToDoService.Common
 			if (currentNotification?.DueDate == task.CheckedTargetDate())
 				return;
 
-			DeletePushNotification(currentNotification);
+			await DeletePushNotification(currentNotification);
 			await CreatePushNotification(task);
 		}
 
-		void DeletePushNotification(PushNotification notification)
+		async System.Threading.Tasks.Task DeletePushNotification(PushNotification notification)
 		{
 			if (notification == null)
 				return;
+
+			var url = String.Format("https://onesignal.com/api/v1/notifications/{0}?app_id={1}",
+			                        notification.ServiceId.ToString(), Environment.GetEnvironmentVariable("ONE_SIGNAL_KEY"));
+			var request = WebRequest.Create(url) as HttpWebRequest;
+
+			request.Method = "DELETE";
+			request.Headers["authorization"] = String.Format("Basic {0}", Environment.GetEnvironmentVariable("ONE_SIGNAL_KEY"));
+
+			await request.GetResponseAsync();
+
+			repository.DeletePushNotification(notification);
 		}
 
 		async System.Threading.Tasks.Task CreatePushNotification(Task task)
