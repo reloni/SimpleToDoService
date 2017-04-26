@@ -9,18 +9,22 @@ using System.IO;
 
 namespace SimpleToDoService.Common
 {
-	public class PushNotificationHelper
+	public class PushNotificationScheduler
 	{
 		private readonly IToDoRepository repository;
 
-		public PushNotificationHelper(IToDoRepository repository)
+		public PushNotificationScheduler(IToDoRepository repository)
 		{
 			this.repository = repository;
 		}
 
 		public async System.Threading.Tasks.Task SchedulePushNotification(Task task)
 		{
-			var currentNotification = task.PushNotifications.FirstOrDefault();//repository.PushNotifications(task).FirstOrDefault();
+			var currentNotification = task.PushNotifications.FirstOrDefault();
+
+			if (currentNotification?.DueDate == task.CheckedTargetDate())
+				return;
+
 			DeletePushNotification(currentNotification);
 			await CreatePushNotification(task);
 		}
@@ -33,7 +37,7 @@ namespace SimpleToDoService.Common
 
 		async System.Threading.Tasks.Task CreatePushNotification(Task task)
 		{
-			var notificationDate = TaskDate(task);
+			var notificationDate = task.CheckedTargetDate();
 			if (!notificationDate.HasValue)
 				return;
 
@@ -89,19 +93,6 @@ namespace SimpleToDoService.Common
 #else
 			catch { }
 #endif
-		}
-
-		private static DateTime? TaskDate(Task task)
-		{
-			if (!task.TargetDate.HasValue)
-				return null;
-
-			var notificationDate = task.TargetDate.Value.ToUniversalTime();
-
-			if (!task.TargetDateIncludeTime)
-				return new DateTime(notificationDate.Year, notificationDate.Month, notificationDate.Day, 0, 0, 0, notificationDate.Kind);
-
-			return task.TargetDate;
 		}
 	}
 }

@@ -71,7 +71,7 @@ namespace SimpleToDoService
 
 			var created = repository.CreateTask(entry);
 
-			await new PushNotificationHelper(repository).SchedulePushNotification(created); ;
+			await new PushNotificationScheduler(repository).SchedulePushNotification(created); ;
 
 			return CreatedAtRoute("GetTask", new { Uuid = created.Uuid }, created);
 		}

@@ -46,7 +46,6 @@ namespace SimpleToDoService.Repository
 		public Task Task(Guid userUuid, Guid entryUuid)
 		{
 			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid)
-				          .Include(o => o.User)
 				          .Include(o => o.PushNotifications)
 				          .FirstOrDefault();
 		}
