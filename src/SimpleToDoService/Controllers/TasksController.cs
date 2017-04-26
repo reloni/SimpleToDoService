@@ -71,13 +71,13 @@ namespace SimpleToDoService
 
 			var created = repository.CreateTask(entry);
 
-			await new PushNotificationScheduler(repository).SchedulePushNotification(created); ;
+			await new PushNotificationScheduler(repository).SchedulePushNotification(created);
 
 			return CreatedAtRoute("GetTask", new { Uuid = created.Uuid }, created);
 		}
 
 		[HttpPut("{uuid:Guid?}")]
-		public IActionResult Put(Guid? uuid, [FromBody] Task entry)
+		public async System.Threading.Tasks.Task<IActionResult> Put(Guid? uuid, [FromBody] Task entry)
 		{
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
@@ -92,6 +92,10 @@ namespace SimpleToDoService
 
 			if (updated == null)
 				return NotFound(entry);
+
+			var reloaded = repository.Task(CurrentUserUuid, entry.Uuid);
+
+			await new PushNotificationScheduler(repository).SchedulePushNotification(reloaded);
 
 			return Ok(updated);
 		}

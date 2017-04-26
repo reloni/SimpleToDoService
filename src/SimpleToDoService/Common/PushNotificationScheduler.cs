@@ -18,11 +18,25 @@ namespace SimpleToDoService.Common
 			this.repository = repository;
 		}
 
+		bool HasEqualDueDatest(Task task, PushNotification notification)
+		{
+			var taskDate = task.CheckedTargetDate();
+			var notificationDate = notification?.DueDate;
+
+			if (taskDate.HasValue && notificationDate.HasValue)
+			{
+				return taskDate.Value.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffzz") ==
+							   notificationDate.Value.ToUniversalTime().ToString("yyyy-MM-dd'T'HH:mm:ss.fffzz");
+			}
+			else
+				return false;
+		}
+
 		public async System.Threading.Tasks.Task SchedulePushNotification(Task task)
 		{
 			var currentNotification = task.PushNotifications.FirstOrDefault();
 
-			if (currentNotification?.DueDate == task.CheckedTargetDate())
+			if (HasEqualDueDatest(task, currentNotification))
 				return;
 
 			await DeletePushNotification(currentNotification);
@@ -35,13 +49,30 @@ namespace SimpleToDoService.Common
 				return;
 
 			var url = String.Format("https://onesignal.com/api/v1/notifications/{0}?app_id={1}",
-			                        notification.ServiceId.ToString(), Environment.GetEnvironmentVariable("ONE_SIGNAL_KEY"));
+			                        notification.ServiceId.ToString(), Environment.GetEnvironmentVariable("ONE_SIGNAL_APP_ID"));
 			var request = WebRequest.Create(url) as HttpWebRequest;
 
+			request.ContentType = "application/json; charset=utf-8";
 			request.Method = "DELETE";
 			request.Headers["authorization"] = String.Format("Basic {0}", Environment.GetEnvironmentVariable("ONE_SIGNAL_KEY"));
 
-			await request.GetResponseAsync();
+			try
+			{
+				using (var writer = await request.GetRequestStreamAsync())
+				{
+					writer.Write(new Byte[0], 0, 0);
+				}
+				await request.GetResponseAsync();
+			}
+#if DEBUG
+			catch (WebException ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+			}
+#else
+			catch { }
+#endif
 
 			repository.DeletePushNotification(notification);
 		}
