@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SimpleToDoService.Common;
 using SimpleToDoService.Entities;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
@@ -39,7 +40,7 @@ namespace SimpleToDoService
 		
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
-
+			
 			return entries;
 		}
 
@@ -58,7 +59,7 @@ namespace SimpleToDoService
 		}
 
 		[HttpPost]
-		public IActionResult Post([FromBody] Task entry)
+		public async System.Threading.Tasks.Task<IActionResult> Post([FromBody] Task entry)
 		{
 			if (!ModelState.IsValid)
 				return BadRequest(ModelState);
@@ -69,11 +70,14 @@ namespace SimpleToDoService
 			entry.UserUuid = CurrentUserUuid;
 
 			var created = repository.CreateTask(entry);
+
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(created);
+
 			return CreatedAtRoute("GetTask", new { Uuid = created.Uuid }, created);
 		}
 
 		[HttpPut("{uuid:Guid?}")]
-		public IActionResult Put(Guid? uuid, [FromBody] Task entry)
+		public async System.Threading.Tasks.Task<IActionResult> Put(Guid? uuid, [FromBody] Task entry)
 		{
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
@@ -89,25 +93,32 @@ namespace SimpleToDoService
 			if (updated == null)
 				return NotFound(entry);
 
+			var reloaded = repository.Task(CurrentUserUuid, entry.Uuid);
+
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(reloaded);
+
 			return Ok(updated);
 		}
 
 		[HttpDelete("{uuid:Guid?}")]
-		public IActionResult Delete(Guid? uuid)
+		public async System.Threading.Tasks.Task<IActionResult> Delete(Guid? uuid)
 		{
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
 
-			var deleted = repository.DeleteTask(uuid.Value);
+			var toDelete = repository.Task(CurrentUserUuid, uuid.Value);
+			if(toDelete == null)
+				return new NotFoundResult();
 
-			if (deleted)
-				return new StatusCodeResult(204);
+			toDelete.TargetDate = null;
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(toDelete);
 
-			return new NotFoundResult();
+			repository.DeleteTask(toDelete);
+			return new StatusCodeResult(204);
 		}
 
 		[HttpPost("{uuid:Guid}/ChangeCompletionStatus/")]
-		public IActionResult ChangeCompletionStatus(Guid uuid, [FromQuery] bool completed)
+		public async System.Threading.Tasks.Task<IActionResult> ChangeCompletionStatus(Guid uuid, [FromQuery] bool completed)
 		{
 			var entry = repository.Task(CurrentUserUuid, uuid);
 
@@ -116,6 +127,8 @@ namespace SimpleToDoService
 
 			entry.Completed = completed;
 			repository.UpdateTask(entry);
+
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(entry);
 
 			return Ok(entry);
 		}

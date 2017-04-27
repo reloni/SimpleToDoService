@@ -16,9 +16,13 @@ namespace SimpleToDoService.Repository
 		Task CreateTask(Task task);
 		Task UpdateTask(Task task);
 		bool DeleteTask(Guid uuid);
+		bool DeleteTask(Task task);
 		User CreateUser(User user);
 		bool DeleteUser(User user);
 		User UpdateUser(User user);
+		PushNotification CreatePushNotification(PushNotification notification);
+		IEnumerable<PushNotification> PushNotifications(Task task);
+		bool DeletePushNotification(PushNotification notification);
 	}
 
 	public class ToDoRepository : IToDoRepository
@@ -32,7 +36,8 @@ namespace SimpleToDoService.Repository
 
 		public IEnumerable<Task> Tasks(Guid userUuid)
 		{
-			return context.Tasks.Where(o => o.User.Uuid == userUuid);
+			return context.Tasks.Where(o => o.User.Uuid == userUuid)
+				          .Include(o => o.PushNotifications);
 		}
 
 		public IEnumerable<User> Users()
@@ -42,13 +47,16 @@ namespace SimpleToDoService.Repository
 
 		public Task Task(Guid userUuid, Guid entryUuid)
 		{
-			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid).FirstOrDefault();
+			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid)
+				          .Include(o => o.PushNotifications)
+				          .FirstOrDefault();
 		}
 
 		public Task CreateTask(Task task)
 		{
 			task.Uuid = new Guid();
 			task.CreationDate = DateTime.Now.ToUniversalTime();
+			task.PushNotifications = new List<PushNotification>();
 			var entity = context.Tasks.Add(task);
 
 			if(context.SaveChanges() == 1)
@@ -76,6 +84,21 @@ namespace SimpleToDoService.Repository
 		{
 			var task = new Task() { Uuid = uuid };
 			context.Tasks.Attach(task);
+			context.Tasks.Remove(task);
+			try
+			{
+				context.SaveChanges();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				// entity doesn't exists in this case
+				return false;
+			}
+			return true;
+		}
+
+		public bool DeleteTask(Task task)
+		{
 			context.Tasks.Remove(task);
 			try
 			{
@@ -123,6 +146,40 @@ namespace SimpleToDoService.Repository
 				return updated;
 
 			return null;
+		}
+
+		public PushNotification CreatePushNotification(PushNotification notification)
+		{
+			notification.Uuid = new Guid();
+
+			var entity = context.PushNotifications.Add(notification);
+
+			if (context.SaveChanges() == 1)
+				return entity.Entity;
+
+			return null;
+		}
+
+		public IEnumerable<PushNotification> PushNotifications(Task task)
+		{
+			return context.PushNotifications.Where(o => o.TaskUuid == task.Uuid);
+
+		}
+
+		public bool DeletePushNotification(PushNotification notification)
+		{
+			context.PushNotifications.Remove(notification);
+
+			try
+			{
+				context.SaveChanges();
+			}
+			catch
+			{
+				return false;
+			}
+
+			return true;
 		}
 	}
 }
