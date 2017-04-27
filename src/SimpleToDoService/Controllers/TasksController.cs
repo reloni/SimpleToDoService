@@ -71,7 +71,7 @@ namespace SimpleToDoService
 
 			var created = repository.CreateTask(entry);
 
-			await new PushNotificationScheduler(repository).SchedulePushNotification(created);
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(created);
 
 			return CreatedAtRoute("GetTask", new { Uuid = created.Uuid }, created);
 		}
@@ -95,27 +95,30 @@ namespace SimpleToDoService
 
 			var reloaded = repository.Task(CurrentUserUuid, entry.Uuid);
 
-			await new PushNotificationScheduler(repository).SchedulePushNotification(reloaded);
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(reloaded);
 
 			return Ok(updated);
 		}
 
 		[HttpDelete("{uuid:Guid?}")]
-		public IActionResult Delete(Guid? uuid)
+		public async System.Threading.Tasks.Task<IActionResult> Delete(Guid? uuid)
 		{
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
 
-			var deleted = repository.DeleteTask(uuid.Value);
+			var toDelete = repository.Task(CurrentUserUuid, uuid.Value);
+			if(toDelete == null)
+				return new NotFoundResult();
 
-			if (deleted)
-				return new StatusCodeResult(204);
+			toDelete.TargetDate = null;
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(toDelete);
 
-			return new NotFoundResult();
+			repository.DeleteTask(toDelete);
+			return new StatusCodeResult(204);
 		}
 
 		[HttpPost("{uuid:Guid}/ChangeCompletionStatus/")]
-		public IActionResult ChangeCompletionStatus(Guid uuid, [FromQuery] bool completed)
+		public async System.Threading.Tasks.Task<IActionResult> ChangeCompletionStatus(Guid uuid, [FromQuery] bool completed)
 		{
 			var entry = repository.Task(CurrentUserUuid, uuid);
 
@@ -124,6 +127,8 @@ namespace SimpleToDoService
 
 			entry.Completed = completed;
 			repository.UpdateTask(entry);
+
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(entry);
 
 			return Ok(entry);
 		}

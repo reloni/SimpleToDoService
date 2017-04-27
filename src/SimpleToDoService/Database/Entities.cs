@@ -93,6 +93,9 @@ namespace SimpleToDoService.Entities
 		[ForeignKey("UserUuid")]
 		public User User { get; set; }
 
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
 		public IEnumerable<PushNotification> PushNotifications { get; set; }
 	}
 

@@ -32,15 +32,17 @@ namespace SimpleToDoService.Common
 				return false;
 		}
 
-		public async System.Threading.Tasks.Task SchedulePushNotification(Task task)
+		public async System.Threading.Tasks.Task SchedulePushNotifications(Task task)
 		{
 			var currentNotification = task.PushNotifications.FirstOrDefault();
 
-			if (HasEqualDueDatest(task, currentNotification))
+			if (!task.Completed && HasEqualDueDatest(task, currentNotification))
 				return;
 
 			await DeletePushNotification(currentNotification);
-			await CreatePushNotification(task);
+
+			if (!task.Completed)
+				await CreatePushNotification(task);
 		}
 
 		async System.Threading.Tasks.Task DeletePushNotification(PushNotification notification)

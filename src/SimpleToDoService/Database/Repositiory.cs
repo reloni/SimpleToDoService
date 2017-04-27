@@ -16,6 +16,7 @@ namespace SimpleToDoService.Repository
 		Task CreateTask(Task task);
 		Task UpdateTask(Task task);
 		bool DeleteTask(Guid uuid);
+		bool DeleteTask(Task task);
 		User CreateUser(User user);
 		bool DeleteUser(User user);
 		User UpdateUser(User user);
@@ -83,6 +84,21 @@ namespace SimpleToDoService.Repository
 		{
 			var task = new Task() { Uuid = uuid };
 			context.Tasks.Attach(task);
+			context.Tasks.Remove(task);
+			try
+			{
+				context.SaveChanges();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				// entity doesn't exists in this case
+				return false;
+			}
+			return true;
+		}
+
+		public bool DeleteTask(Task task)
+		{
 			context.Tasks.Remove(task);
 			try
 			{
