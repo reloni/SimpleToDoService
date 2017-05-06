@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -61,14 +61,16 @@ namespace SimpleToDoService
 
 			app.UseJwtBearerAuthentication(new JwtBearerOptions
 			{
+
 				AutomaticAuthenticate = true,
-				Authority = "https://securetoken.google.com/simpletaskmanager-9c565",
+				Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
 				TokenValidationParameters = new TokenValidationParameters
 				{
+					
 					ValidateIssuer = true,
-					ValidIssuer = "https://securetoken.google.com/simpletaskmanager-9c565",
+					ValidIssuer = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
 					ValidateAudience = true,
-					ValidAudience = "simpletaskmanager-9c565",
+					ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
 					ValidateLifetime = true
 				}
 			});
