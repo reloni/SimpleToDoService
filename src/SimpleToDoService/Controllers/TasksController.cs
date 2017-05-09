@@ -67,11 +67,7 @@ namespace SimpleToDoService
 			if (entry == null)
 				return BadRequest();
 
-			entry.UserUuid = CurrentUserUuid;
-
-			var created = repository.CreateTask(entry);
-
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(created);
+			var created = await CreateTask(entry);
 
 			return CreatedAtRoute("GetTask", new { Uuid = created.Uuid }, created);
 		}
@@ -86,16 +82,11 @@ namespace SimpleToDoService
 				return BadRequest(ModelState);
 
 			entry.Uuid = uuid.Value;
-			entry.UserUuid = CurrentUserUuid;
 
-			var updated = repository.UpdateTask(entry);
+			var updated = await UpdateTask(entry);
 
 			if (updated == null)
 				return NotFound(entry);
-
-			var reloaded = repository.Task(CurrentUserUuid, entry.Uuid);
-
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(reloaded);
 
 			return Ok(updated);
 		}
@@ -106,14 +97,11 @@ namespace SimpleToDoService
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
 
-			var toDelete = repository.Task(CurrentUserUuid, uuid.Value);
-			if(toDelete == null)
+			var deleted = await DeleteTask(uuid.Value);
+
+			if (!deleted)
 				return new NotFoundResult();
 
-			toDelete.TargetDate = null;
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(toDelete);
-
-			repository.DeleteTask(toDelete);
 			return new StatusCodeResult(204);
 		}
 
@@ -131,6 +119,74 @@ namespace SimpleToDoService
 			await new PushNotificationScheduler(repository).SchedulePushNotifications(entry);
 
 			return Ok(entry);
+		}
+
+		[HttpPost("BatchUpdate")]
+		public async System.Threading.Tasks.Task<IActionResult> BatchUpdate([FromBody] BatchUpdateInstruction instruction) {
+			if (!ModelState.IsValid)
+				return BadRequest(ModelState);
+
+			foreach(var task in instruction.ToCreate)
+			{
+				await CreateTask(task);
+			}
+
+			foreach(var task in instruction.ToUpdate)
+			{
+				await UpdateTask(task);
+			}
+
+			foreach(var uuid in instruction.ToDelete)
+			{
+				await DeleteTask(uuid);
+			}
+
+			return Ok(Get(null));
+		}
+
+		private async System.Threading.Tasks.Task<Task> CreateTask(Task task) 
+		{
+			task.UserUuid = CurrentUserUuid;
+
+			if (!task.TargetDate.HasValue)
+				task.TargetDateIncludeTime = false;
+			
+			var created = repository.CreateTask(task);
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(created);
+			return created;
+		}
+
+		private async System.Threading.Tasks.Task<Task> UpdateTask(Task task)
+		{
+			task.UserUuid = CurrentUserUuid;
+
+			if (!task.TargetDate.HasValue)
+				task.TargetDateIncludeTime = false;
+
+			var updated = repository.UpdateTask(task);
+
+			if (updated == null)
+				return null;
+
+			var reloaded = repository.Task(CurrentUserUuid, task.Uuid);
+
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(reloaded);
+
+			return reloaded;
+		}
+
+		private async System.Threading.Tasks.Task<bool> DeleteTask(Guid uuid)
+		{
+			var toDelete = repository.Task(CurrentUserUuid, uuid);
+			if (toDelete == null)
+				return false;
+
+			toDelete.TargetDate = null;
+			await new PushNotificationScheduler(repository).SchedulePushNotifications(toDelete);
+
+			repository.DeleteTask(toDelete);
+
+			return true;
 		}
 	}
 }
