@@ -23,11 +23,6 @@ namespace SimpleToDoService
 			get { return (Guid)HttpContext.Items["UserUuid"]; }
 		}
 
-		public string CurrentUserFirebaseId
-		{
-			get { return HttpContext.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value; }
-		}
-
 		public TasksController(IToDoRepository repository)
 		{
 			this.repository = repository;
