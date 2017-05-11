@@ -13,6 +13,7 @@ namespace SimpleToDoService.Repository
 		User User(Guid uuid);
 		IEnumerable<Task> Tasks(Guid userUuid);
 		Task Task(Guid userUuid, Guid taskUuid);
+		Task ReloadTask(Task task);
 		Task CreateTask(Task task);
 		Task UpdateTask(Task task);
 		bool DeleteTask(Guid uuid);
@@ -50,6 +51,12 @@ namespace SimpleToDoService.Repository
 			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid)
 				          .Include(o => o.PushNotifications)
 				          .FirstOrDefault();
+		}
+
+		public Task ReloadTask(Task task)
+		{
+			context.Entry(task).State = EntityState.Detached;
+			return Task(task.UserUuid, task.Uuid);
 		}
 
 		public Task CreateTask(Task task)

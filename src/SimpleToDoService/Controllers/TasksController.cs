@@ -163,7 +163,7 @@ namespace SimpleToDoService
 			if (updated == null)
 				return null;
 
-			var reloaded = repository.Task(CurrentUserUuid, task.Uuid);
+			var reloaded = repository.ReloadTask(updated);
 
 			await new PushNotificationScheduler(repository).SchedulePushNotifications(reloaded);
 

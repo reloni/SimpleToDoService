@@ -69,9 +69,6 @@ namespace SimpleToDoService.Entities
 		[MaxLength(4000)]
 		public string Notes { get; set; }
 
-		[XmlIgnore]
-		[JsonIgnore]
-		[IgnoreDataMember]
 		[Column("creationdate")]
 		public DateTime CreationDate { get; set; }
 
