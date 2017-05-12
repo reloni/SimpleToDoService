@@ -16,6 +16,7 @@ namespace SimpleToDoService.Repository
 		Task ReloadTask(Task task);
 		Task CreateTask(Task task);
 		Task UpdateTask(Task task);
+		void DetachTask(Task task);
 		bool DeleteTask(Guid uuid);
 		bool DeleteTask(Task task);
 		User CreateUser(User user);
@@ -55,13 +56,20 @@ namespace SimpleToDoService.Repository
 
 		public Task ReloadTask(Task task)
 		{
-			context.Entry(task).State = EntityState.Detached;
+			DetachTask(task);
 			return Task(task.UserUuid, task.Uuid);
+		}
+
+		public void DetachTask(Task task)
+		{
+			context.Entry(task).State = EntityState.Detached;
 		}
 
 		public Task CreateTask(Task task)
 		{
-			task.Uuid = new Guid();
+			if (task.Uuid == null) 
+				task.Uuid = new Guid();
+			
 			task.CreationDate = DateTime.Now.ToUniversalTime();
 			task.PushNotifications = new List<PushNotification>();
 			var entity = context.Tasks.Add(task);

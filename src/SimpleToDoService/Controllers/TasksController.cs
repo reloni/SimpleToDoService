@@ -123,12 +123,14 @@ namespace SimpleToDoService
 
 			foreach(var task in instruction.ToCreate)
 			{
-				await CreateTask(task);
+				var t = await CreateTask(task);
+				repository.DetachTask(t);
 			}
 
 			foreach(var task in instruction.ToUpdate)
 			{
-				await UpdateTask(task);
+				var t = await UpdateTask(task);
+				repository.DetachTask(t);
 			}
 
 			foreach(var uuid in instruction.ToDelete)
