@@ -96,7 +96,9 @@ namespace SimpleToDoService.Common
 			{
 				app_id = Environment.GetEnvironmentVariable("ONE_SIGNAL_APP_ID"),
 				contents = new { en = task.Description },
+				headings = new { en = "Task notification" },
 				content_available = true,
+				mutable_content = true,
 				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = repository.User(task.UserUuid).FirebaseId } },
 				send_after = notificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss 'GMT'zzzz")
 			});
