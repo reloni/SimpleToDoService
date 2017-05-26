@@ -23,8 +23,5 @@ ENV CONNECTIONSTRINGNAME ConnectionString_Postgres
 
 COPY ./Scripts/secrets-entrypoint.sh /secrets-entrypoint.sh
 COPY ./Scripts/RestoreDB.sh /RestoreDB.sh
+COPY ./Scripts/CreateDB.sql /CreateDB.sql
 ENTRYPOINT ["/secrets-entrypoint.sh"]
-
-# Run the dotnet application against a DLL from within the container
-#ENTRYPOINT ["dotnet", "SimpleToDoService.dll"]
-#CMD [dotnet, "SimpleToDoService.dll"]
