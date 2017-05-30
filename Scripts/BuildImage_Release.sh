@@ -11,7 +11,7 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   fi
 
   export REPO=${DOCKER_AWS_REPONAME}
-  export TAG=${TRAVIS_TAG}-${DBVersion}-$SUBTAG
+  export TAG=${TRAVIS_TAG}-$SUBTAG
 
   docker run -it -d --name builder microsoft/dotnet:1.1.2-sdk tail -f /dev/null
   docker cp src/SimpleToDoService builder:app
@@ -21,8 +21,6 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   #push to AWS
   aws ecr get-login --no-include-email --region eu-central-1 > login
   eval "$(cat login)"
-  export REPO=${DOCKER_AWS_REPONAME}
-  export TAG=${TRAVIS_TAG}-release
   docker build -f Dockerfile.release -t $REPO:$TAG .
   if [ "$SUBTAG" = "release" ]; then
     docker tag $REPO:$TAG $REPO:latest
