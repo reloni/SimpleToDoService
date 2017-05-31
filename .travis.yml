@@ -9,5 +9,9 @@ before_install:
   - pip install --user awscli
   - export PATH=$PATH:$HOME/.local/bin
 
+before_script:
+  - docker --version
+  - aws --version
+
 script:
   ./Scripts/BuildImage_Release.sh

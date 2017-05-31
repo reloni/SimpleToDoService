@@ -2,6 +2,7 @@ FROM microsoft/dotnet:1.1.2-runtime
 
 # Install the AWS CLI
 RUN apt-get update && \
+    apt-get install -y postgresql-client-9.4 && \
     apt-get -y install python curl unzip && cd /tmp && \
     curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" \
     -o "awscli-bundle.zip" && \
@@ -21,8 +22,8 @@ ENV ASPNETCORE_ENVIRONMENT Production
 ENV CONNECTIONSTRINGNAME ConnectionString_Postgres
 
 COPY ./Scripts/secrets-entrypoint.sh /secrets-entrypoint.sh
+COPY ./Scripts/RestoreDB.sh /RestoreDB.sh
+COPY ./Scripts/CreateDB.sql /CreateDB.sql
 ENTRYPOINT ["/secrets-entrypoint.sh"]
 
-# Run the dotnet application against a DLL from within the container
-#ENTRYPOINT ["dotnet", "SimpleToDoService.dll"]
 CMD [dotnet, "SimpleToDoService.dll"]
