@@ -25,5 +25,3 @@ COPY ./Scripts/secrets-entrypoint.sh /secrets-entrypoint.sh
 COPY ./Scripts/RestoreDB.sh /RestoreDB.sh
 COPY ./Scripts/CreateDB.sql /CreateDB.sql
 ENTRYPOINT ["/secrets-entrypoint.sh"]
-
-CMD [dotnet, "SimpleToDoService.dll"]
