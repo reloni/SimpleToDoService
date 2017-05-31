@@ -10,4 +10,4 @@ fi
 # restore database
 sh /RestoreDB.sh
 
-exec "$@"
+dotnet SimpleToDoService.dll
