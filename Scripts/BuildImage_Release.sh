@@ -19,7 +19,7 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   docker cp builder:published published
 
   #push to AWS
-  aws ecr get-login --no-include-email --region eu-central-1 > login
+  aws ecr get-login --no-include-email --region ${DOCKER_AWS_REGION} > login
   eval "$(cat login)"
   docker build -f Dockerfile.release -t $REPO:$TAG .
   if [ "$SUBTAG" = "release" ]; then
