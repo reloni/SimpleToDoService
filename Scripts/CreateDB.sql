@@ -30,3 +30,10 @@ DueDate timestamptz NOT NULL
 );
 
 CREATE INDEX PushNotification_ServiceId ON PushNotification (ServiceId);
+
+CREATE TABLE DBVersion
+(
+  Version INTEGER NOT NULL
+);
+
+insert into DBVersion values (1)
