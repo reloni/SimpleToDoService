@@ -42,8 +42,8 @@ namespace SimpleToDoService.Middleware
 
 		private Guid LoadUserGuid(HttpContext context)
 		{
-			var firebaseId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-			var currentUser = repository.Users().Where(o => o.FirebaseId == firebaseId).FirstOrDefault();
+			var providerId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
+			var currentUser = repository.Users().Where(o => o.ProviderId == providerId).FirstOrDefault();
 
 			if (currentUser != null)
 			{
@@ -52,7 +52,7 @@ namespace SimpleToDoService.Middleware
 
 			var user = new User()
 			{
-				FirebaseId = firebaseId,
+				ProviderId = providerId,
 				Email = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email).Value,
 				FirstName = "",
 				LastName = ""

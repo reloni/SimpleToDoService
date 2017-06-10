@@ -16,11 +16,11 @@ namespace SimpleToDoService.Entities
 		[Required]
 		public Guid Uuid { get; set; }
 
-		[Column("firebaseid")]
+		[Column("providerid")]
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
-		public string FirebaseId { get; set; }
+		public string ProviderId { get; set; }
 
 		[MaxLength(255)]
 		[Column("firstname")]

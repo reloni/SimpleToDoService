@@ -1,4 +1,4 @@
-﻿using System;
+﻿﻿using System;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Middleware;
@@ -33,7 +33,7 @@ namespace SimpleToDoService.Controllers
 
 			try
 			{
-				await Common.Auth0Client.DeleteUser(user.FirebaseId);
+				await Common.Auth0Client.DeleteUser(user.ProviderId);
 			}
 #if DEBUG
 			catch (Exception ex)

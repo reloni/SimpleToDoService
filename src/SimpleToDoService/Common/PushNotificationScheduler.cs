@@ -99,7 +99,7 @@ namespace SimpleToDoService.Common
 				headings = new { en = "Task notification" },
 				content_available = true,
 				mutable_content = true,
-				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = repository.User(task.UserUuid).FirebaseId } },
+				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = repository.User(task.UserUuid).ProviderId } },
 				send_after = notificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss 'GMT'zzzz")
 			});
 
