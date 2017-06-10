@@ -28,6 +28,6 @@ COPY ./Scripts/MigrateDB.sh /MigrateDB.sh
 RUN chmod +x /MigrateDB.sh
 
 RUN mkdir Migrations
-COPY ./Migrations/1.sql /Migrations/1.sql
+COPY ./Scripts/Migrations/1.sql /Migrations/1.sql
 
 ENTRYPOINT ["/secrets-entrypoint.sh"]
