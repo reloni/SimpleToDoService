@@ -24,12 +24,29 @@ namespace SimpleToDoService.Controllers
 		}
 
 		[HttpDelete()]
-		public IActionResult DeleteUser()
+		public async System.Threading.Tasks.Task<IActionResult> DeleteUser()
 		{
 			var user = repository.User(CurrentUserUuid);
 
 			if (user == null)
 				return NotFound();
+
+			try
+			{
+				await Common.Auth0Client.DeleteUser(user.FirebaseId);
+			}
+#if DEBUG
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine(ex.Message);
+				return StatusCode(500, new ServiceError() { Message = "Error while deleting user" });
+			}
+#else
+			catch 
+			{
+				return StatusCode(401, new ServiceError() { Message = "Error while deleting user" });
+			}
+#endif
 
 			repository.DeleteUser(user);
 
