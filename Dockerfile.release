@@ -25,8 +25,9 @@ COPY ./Scripts/secrets-entrypoint.sh /secrets-entrypoint.sh
 COPY ./Scripts/RestoreDB.sh /RestoreDB.sh
 COPY ./Scripts/CreateDB.sql /CreateDB.sql
 COPY ./Scripts/MigrateDB.sh /MigrateDB.sh
+RUN chmod +x /MigrateDB.sh
 
-MKDIR Migrations
+RUN mkdir Migrations
 COPY ./Migrations/1.sql /Migrations/1.sql
 
 ENTRYPOINT ["/secrets-entrypoint.sh"]
