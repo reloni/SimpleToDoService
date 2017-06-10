@@ -10,4 +10,7 @@ fi
 # restore database
 sh /RestoreDB.sh
 
+#migrate database
+sh /MigrateDB.sh
+
 exec dotnet SimpleToDoService.dll
