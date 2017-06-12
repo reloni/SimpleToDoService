@@ -14,4 +14,4 @@ before_script:
   - aws --version
 
 script:
-  ./Scripts/BuildImage_Release.sh
+  ./Scripts/Publish.sh
