@@ -1,4 +1,4 @@
-FROM microsoft/dotnet:1.1.0-runtime
+FROM microsoft/dotnet:1.1.2-runtime
 
 # Install the AWS CLI
 RUN apt-get update && \
@@ -24,4 +24,10 @@ ENV CONNECTIONSTRINGNAME ConnectionString_Postgres
 COPY ./Scripts/secrets-entrypoint.sh /secrets-entrypoint.sh
 COPY ./Scripts/RestoreDB.sh /RestoreDB.sh
 COPY ./Scripts/CreateDB.sql /CreateDB.sql
+COPY ./Scripts/MigrateDB.sh /MigrateDB.sh
+RUN chmod +x /MigrateDB.sh
+
+RUN mkdir Migrations
+COPY ./Scripts/Migrations/1.sql /Migrations/1.sql
+
 ENTRYPOINT ["/secrets-entrypoint.sh"]
