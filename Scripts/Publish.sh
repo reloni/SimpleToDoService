@@ -32,11 +32,12 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   aws ecr get-login --no-include-email --region ${DOCKER_AWS_REGION} > login
   eval "$(cat login)"
   docker build -f $DOCKERFILE -t $REPO:$TAG .
+
   if [ "$SUBTAG" = "release" ]; then
     docker tag $REPO:$TAG $REPO:latest
-  else
-    docker tag $REPO:$TAG $REPO:dev-latest
   fi
+  docker tag $REPO:$TAG $REPO:dev-latest
+
   docker push $REPO > PushLog.log
   echo "AWS push log ===="
   cat PushLog.log
@@ -46,11 +47,12 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
   export REPO=reloni/todo-service
   docker build -f $DOCKERFILE -t $REPO:$TAG .
+
   if [ "$SUBTAG" = "release" ]; then
     docker tag $REPO:$TAG $REPO:latest
-  else
-    docker tag $REPO:$TAG $REPO:dev-latest
   fi
+  docker tag $REPO:$TAG $REPO:dev-latest
+
   docker push $REPO > PushLog.log
   echo "Docker hub push log ===="
   cat PushLog.log

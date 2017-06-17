@@ -7,9 +7,6 @@ if [ "$LOAD_S3_SECRETS" = "YES" ]; then
   eval $(aws s3 --region ${SECRETS_BUCKET_REGION} cp s3://${SECRETS_BUCKET_NAME}/${SECRETS_FILE_NAME} - | sed 's/^/export /')
 fi
 
-# restore database
-sh /RestoreDB.sh
-
 #migrate database
 sh /MigrateDB.sh
 
