@@ -5,9 +5,8 @@ if [ "$LOAD_S3_SECRETS" = "YES" ]; then
   eval $(aws s3 --region ${SECRETS_BUCKET_REGION} cp s3://${SECRETS_BUCKET_NAME}/${SECRETS_FILE_NAME} - | sed 's/^/export /')
 fi
 
-if [ -f "${PGDATA_BACKUP}" ]; then
-  gunzip -c ${PGDATA_BACKUP} | psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} 2> ${BACKUP_RESTORE_LOG} && \
-  rm ${PGDATA_BACKUP}
-else
-  cat /CreateDB.sql | psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} 2> ${BACKUP_RESTORE_LOG}
-fi
+#load latest database backup
+aws s3 --region ${SECRETS_BUCKET_REGION} cp s3://${BACKUPS_BUCKET_NAME}/latest.psql.gz ./latest.psql.gz > ${BACKUP_RESTORE_LOG} 2>&1
+#restore backup
+gunzip -c ./latest.psql.gz | psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} >> ${BACKUP_RESTORE_LOG} 2>&1 && \
+rm ./latest.psql.gz
