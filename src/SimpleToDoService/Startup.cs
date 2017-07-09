@@ -27,9 +27,8 @@ namespace SimpleToDoService
 
 		public void ConfigureServices(IServiceCollection services)
 		{
-			
-			services.AddMvc()
-			        
+			services.AddResponseCompression();
+			services.AddMvc()	        
 				.AddXmlSerializerFormatters()
 				.AddXmlDataContractSerializerFormatters()
 				.AddJsonOptions(o => 
@@ -74,6 +73,8 @@ namespace SimpleToDoService
 					ValidateLifetime = true
 				}
 			});
+
+			app.UseResponseCompression();
 
 			app.UseMiddleware<CheckUserMiddleware>();
 
