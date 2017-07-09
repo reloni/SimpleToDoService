@@ -59,7 +59,7 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   echo "======"
 
   # restart development containers
-  TASKARN=aws ecs list-tasks --cluster ${DOCKER_AWS_CLUSTER_NAME} --region ${DOCKER_AWS_REGION} --service-name ${DOCKER_AWS_DEV_TASK_SERVICE} --output text | cut -d$'\t' -f2
+  TASKARN=$(aws ecs list-tasks --cluster ${DOCKER_AWS_CLUSTER_NAME} --region ${DOCKER_AWS_REGION} --service-name ${DOCKER_AWS_DEV_TASK_SERVICE} --output text | cut -d$'\t' -f2)
   aws ecs stop-task --task $TASKARN --cluster ${DOCKER_AWS_CLUSTER_NAME} --region ${DOCKER_AWS_REGION}
 fi
 
