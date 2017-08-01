@@ -9,7 +9,7 @@ using SimpleToDoService.Entities;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
 
-namespace SimpleToDoService
+namespace SimpleToDoService.Controllers
 {
 	[Authorize]
 	[MiddlewareFilter(typeof(CheckUserMiddleware))]
@@ -32,7 +32,7 @@ namespace SimpleToDoService
 		public IEnumerable<Task> Get(Guid? uuid)
 		{
 			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
-		
+
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
 			
