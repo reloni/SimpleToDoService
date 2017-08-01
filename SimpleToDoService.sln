@@ -5,6 +5,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{C3127498-F0A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleToDoService", "src\SimpleToDoService\SimpleToDoService.csproj", "{EE71DC07-3CF7-474C-B597-DB1D9A08E937}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleToDoServiceTests", "src\SimpleToDoServiceTests\SimpleToDoServiceTests.csproj", "{92FB4095-44B4-4953-BA73-D3D49C1753E7}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,8 +17,13 @@ Global
 		{EE71DC07-3CF7-474C-B597-DB1D9A08E937}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE71DC07-3CF7-474C-B597-DB1D9A08E937}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EE71DC07-3CF7-474C-B597-DB1D9A08E937}.Release|Any CPU.Build.0 = Release|Any CPU
+		{92FB4095-44B4-4953-BA73-D3D49C1753E7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{92FB4095-44B4-4953-BA73-D3D49C1753E7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{92FB4095-44B4-4953-BA73-D3D49C1753E7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{92FB4095-44B4-4953-BA73-D3D49C1753E7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{EE71DC07-3CF7-474C-B597-DB1D9A08E937} = {C3127498-F0A5-475F-A892-CF42C98747FA}
+		{92FB4095-44B4-4953-BA73-D3D49C1753E7} = {C3127498-F0A5-475F-A892-CF42C98747FA}
 	EndGlobalSection
 EndGlobal
