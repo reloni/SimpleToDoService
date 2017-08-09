@@ -17,15 +17,17 @@ namespace SimpleToDoService.Controllers
 	public class TasksController : Controller
 	{
 		private readonly IToDoRepository repository;
+		private readonly IPushNotificationScheduler pushScheduler;
 
 		public Guid CurrentUserUuid
 		{
 			get { return (Guid)HttpContext.Items["UserUuid"]; }
 		}
 
-		public TasksController(IToDoRepository repository)
+		public TasksController(IToDoRepository repository, IPushNotificationScheduler pushScheduler)
 		{
 			this.repository = repository;
+			this.pushScheduler = pushScheduler;
 		}
 
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
@@ -111,7 +113,7 @@ namespace SimpleToDoService.Controllers
 			entry.Completed = completed;
 			repository.UpdateTask(entry);
 
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(entry);
+			await pushScheduler.SchedulePushNotifications(entry);
 
 			return Ok(entry);
 		}
@@ -149,7 +151,7 @@ namespace SimpleToDoService.Controllers
 				task.TargetDateIncludeTime = false;
 			
 			var created = repository.CreateTask(task);
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(created);
+			await pushScheduler.SchedulePushNotifications(created);
 			return created;
 		}
 
@@ -167,7 +169,7 @@ namespace SimpleToDoService.Controllers
 
 			var reloaded = repository.ReloadTask(updated);
 
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(reloaded);
+			await pushScheduler.SchedulePushNotifications(reloaded);
 
 			return reloaded;
 		}
@@ -179,7 +181,7 @@ namespace SimpleToDoService.Controllers
 				return false;
 
 			toDelete.TargetDate = null;
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(toDelete);
+			await pushScheduler.SchedulePushNotifications(toDelete);
 
 			repository.DeleteTask(toDelete);
 

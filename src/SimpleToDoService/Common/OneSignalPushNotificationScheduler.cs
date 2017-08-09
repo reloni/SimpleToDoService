@@ -9,11 +9,16 @@ using System.IO;
 
 namespace SimpleToDoService.Common
 {
-	public class PushNotificationScheduler
+	public interface IPushNotificationScheduler 
+	{
+		System.Threading.Tasks.Task SchedulePushNotifications(Task task);
+	}
+
+	public class OneSignalPushNotificationScheduler : IPushNotificationScheduler
 	{
 		private readonly IToDoRepository repository;
 
-		public PushNotificationScheduler(IToDoRepository repository)
+		public OneSignalPushNotificationScheduler(IToDoRepository repository)
 		{
 			this.repository = repository;
 		}
@@ -45,7 +50,7 @@ namespace SimpleToDoService.Common
 				await CreatePushNotification(task);
 		}
 
-		async System.Threading.Tasks.Task DeletePushNotification(PushNotification notification)
+		private async System.Threading.Tasks.Task DeletePushNotification(PushNotification notification)
 		{
 			if (notification == null)
 				return;
@@ -79,7 +84,7 @@ namespace SimpleToDoService.Common
 			repository.DeletePushNotification(notification);
 		}
 
-		async System.Threading.Tasks.Task CreatePushNotification(Task task)
+		private async System.Threading.Tasks.Task CreatePushNotification(Task task)
 		{
 			var notificationDate = task.CheckedTargetDate();
 			if (!notificationDate.HasValue)

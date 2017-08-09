@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using SimpleToDoService.Context;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
+using SimpleToDoService.Common;
 
 namespace SimpleToDoService
 {
@@ -49,6 +50,7 @@ namespace SimpleToDoService
 			services.AddDbContext<ToDoDbContext>(opts => opts.UseNpgsql(connectionString));
 			services.AddScoped<IToDoDbContext, ToDoDbContext>();
 			services.AddScoped<IToDoRepository, ToDoRepository>();
+			services.AddScoped<IPushNotificationScheduler, OneSignalPushNotificationScheduler>();
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
