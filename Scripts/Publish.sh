@@ -15,18 +15,18 @@ if [ "${TRAVIS_TAG}" != "" ]; then
 
   docker run -it -d --name builder microsoft/dotnet:1.1.2-sdk tail -f /dev/null
 
-  docker exec builder bash -c 'mkdir -p app/service; exit $?'
-  docker exec builder bash -c 'mkdir -p app/tests; exit $?'
-  docker cp src/SimpleToDoService/. builder:app/service
-  docker cp src/SimpleToDoServiceTests/. builder:app/tests
+  docker exec builder bash -c 'mkdir -p app/SimpleToDoService; exit $?'
+  docker exec builder bash -c 'mkdir -p app/SimpleToDoServiceTests; exit $?'
+  docker cp src/SimpleToDoService/. builder:app/SimpleToDoService
+  docker cp src/SimpleToDoServiceTests/. builder:app/SimpleToDoServiceTests
 
   # run tests
-  docker exec builder bash -c 'cd /app/tests; dotnet restore; dotnet test ./SimpleToDoServiceTests.csproj; exit $?'
+  docker exec builder bash -c 'cd /app/SimpleToDoServiceTests; dotnet restore; dotnet test ./SimpleToDoServiceTests.csproj; exit $?'
 
   if [ "$SUBTAG" = "release" ]; then
-    docker exec builder bash -c 'cd /app/service; dotnet restore; dotnet publish --configuration release -o "../published/release"; exit $?'
+    docker exec builder bash -c 'cd /app/SimpleToDoService; dotnet restore; dotnet publish --configuration release -o "../published/release"; exit $?'
   else
-    docker exec builder bash -c 'cd /app/service; dotnet restore; dotnet publish --configuration debug -o "../published/debug"; exit $?'
+    docker exec builder bash -c 'cd /app/SimpleToDoService; dotnet restore; dotnet publish --configuration debug -o "../published/debug"; exit $?'
   fi
   docker cp builder:published published
 
