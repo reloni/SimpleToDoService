@@ -15,6 +15,23 @@ namespace SimpleToDoServiceTests
 
 	static class Extensions
 	{
+		public static Task Copy(this Task task) 
+		{
+			return new Task()
+			{ 
+				Completed = task.Completed,
+				CreationDate = task.CreationDate,
+				Description = task.Description,
+				Notes = task.Notes,
+				PushNotifications = null,
+				UserUuid = task.UserUuid,
+				Uuid = task.Uuid,
+				TargetDate = task.TargetDate,
+				TargetDateIncludeTime = task.TargetDateIncludeTime,
+				User = task.User
+			};
+		}
+
 		public static void AddTask(this User user, string description, Guid? guid = null, bool completed = false, string notes = "", DateTime? targetDate = null, bool targetDateIncludeTime = true)
 		{
 			(user.Tasks as List<Task>).Add(new Task()

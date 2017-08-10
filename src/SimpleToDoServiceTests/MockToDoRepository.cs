@@ -22,7 +22,17 @@ class MockToDoRepository : IToDoRepository
 
 		public Task CreateTask(Task task)
 		{
-			throw new NotImplementedException();
+			var user = _users.Where(o => o.Uuid == task.UserUuid).FirstOrDefault();
+			if (user == null)
+				throw new Exception($"User with uid {task.UserUuid.ToString()} not found");
+
+			var newTask = task.Copy();
+			if (newTask.Uuid == null)
+				newTask.Uuid = new Guid();
+			newTask.CreationDate = DateTime.Now;
+			newTask.PushNotifications = new List<PushNotification>();
+			(user.Tasks as List<Task>).Add(newTask);
+			return newTask;
 		}
 
 		public User CreateUser(User user)
@@ -52,7 +62,7 @@ class MockToDoRepository : IToDoRepository
 
 		public void DetachTask(Task task)
 		{
-			throw new NotImplementedException();
+
 		}
 
 		public IEnumerable<PushNotification> PushNotifications(Task task)

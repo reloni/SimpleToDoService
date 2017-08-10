@@ -90,5 +90,41 @@ namespace SimpleToDoServiceTests
 			Assert.Equal(2, objects?.Count());
 			Assert.Equal(user.Tasks, objects);
 		}
+
+		[Fact]
+		public async void TestBatchUpdate_Create()
+		{
+			var userGuid = Guid.NewGuid();
+			var user = Utils.NewUser(userGuid);
+			user.AddTask("test task 1");
+			user.AddTask("test task 2");
+
+			var user2 = Utils.NewUser();
+			user2.AddTask("other 1");
+			user2.AddTask("other 2");
+
+			var repo = new MockToDoRepository(new List<User>() { user, user2 });
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			controller.ControllerContext = new ControllerContext();
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
+
+			var instruction = new BatchUpdateInstruction() { 
+				ToCreate = new List<Task>() { new Task() { Uuid = Guid.NewGuid(), Description = "Created task" } }, 
+				ToUpdate = new List<Task>(), 
+				ToDelete = new List<Guid>() 
+			};
+
+			var result = await controller.BatchUpdate(instruction) as OkObjectResult;
+
+			Assert.NotNull(result);
+
+			Assert.Equal(3, user.Tasks.Count());
+
+			var objects = (result.Value as IEnumerable<Task>).ToList();
+			Assert.NotNull(objects);
+			Assert.Equal(3, objects?.Count());
+			Assert.Equal(user.Tasks, objects);
+		}
 	}
 }
