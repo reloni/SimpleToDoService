@@ -32,7 +32,7 @@ namespace SimpleToDoServiceTests
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
 
 			var result = controller.Get(null);
-			Assert.Equal(21, result.Count());
+			Assert.Equal(2, result.Count());
 		}
 
 		[Fact]
