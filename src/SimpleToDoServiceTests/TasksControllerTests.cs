@@ -32,7 +32,7 @@ namespace SimpleToDoServiceTests
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
 
 			var result = controller.Get(null);
-			Assert.Equal(2, result.Count());
+			Assert.Equal(21, result.Count());
 		}
 
 		[Fact]
@@ -109,10 +109,10 @@ namespace SimpleToDoServiceTests
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
 
-			var instruction = new BatchUpdateInstruction() { 
-				ToCreate = new List<Task>() { new Task() { Uuid = Guid.NewGuid(), Description = "Created task" } }, 
-				ToUpdate = new List<Task>(), 
-				ToDelete = new List<Guid>() 
+			var instruction = new BatchUpdateInstruction() {
+				ToCreate = new List<Task>() { new Task() { Uuid = Guid.NewGuid(), Description = "Created task" } },
+				ToUpdate = new List<Task>(),
+				ToDelete = new List<Guid>()
 			};
 
 			var result = await controller.BatchUpdate(instruction) as OkObjectResult;
