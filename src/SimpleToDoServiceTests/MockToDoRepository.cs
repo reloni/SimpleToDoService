@@ -15,6 +15,14 @@ class MockToDoRepository : IToDoRepository
 			_users = users;
 		}
 
+		private User GetUser(Guid uuid)
+		{
+			var user = _users.Where(o => o.Uuid == uuid).FirstOrDefault();
+			if (user == null)
+				throw new Exception($"User with uid {uuid.ToString()} not found");
+			return user;
+		}
+
 		public PushNotification CreatePushNotification(PushNotification notification)
 		{
 			throw new NotImplementedException();
@@ -22,9 +30,7 @@ class MockToDoRepository : IToDoRepository
 
 		public Task CreateTask(Task task)
 		{
-			var user = _users.Where(o => o.Uuid == task.UserUuid).FirstOrDefault();
-			if (user == null)
-				throw new Exception($"User with uid {task.UserUuid.ToString()} not found");
+			var user = GetUser(task.UserUuid);
 
 			var newTask = task.Copy();
 			if (newTask.Uuid == null)
@@ -52,7 +58,11 @@ class MockToDoRepository : IToDoRepository
 
 		public bool DeleteTask(Task task)
 		{
-			throw new NotImplementedException();
+			var user = GetUser(task.UserUuid);
+			var toDelete = user.Tasks.Where(o => o.Uuid == task.Uuid).FirstOrDefault();
+			if (toDelete == null)
+				return false;
+			return (user.Tasks as List<Task>).Remove(toDelete);
 		}
 
 		public bool DeleteUser(User user)
@@ -72,12 +82,12 @@ class MockToDoRepository : IToDoRepository
 
 		public Task ReloadTask(Task task)
 		{
-			throw new NotImplementedException();
+			return task;
 		}
 
 		public Task Task(Guid userUuid, Guid taskUuid)
 		{
-			throw new NotImplementedException();
+			return _users.Where(o => o.Uuid == userUuid).FirstOrDefault()?.Tasks.Where(o => o.Uuid == taskUuid).FirstOrDefault();
 		}
 
 		public IEnumerable<Task> Tasks(Guid userUuid)
@@ -87,7 +97,19 @@ class MockToDoRepository : IToDoRepository
 
 		public Task UpdateTask(Task task)
 		{
-			throw new NotImplementedException();
+			var user = GetUser(task.UserUuid);
+
+			var toUpdate = user.Tasks.Where(o => o.Uuid == task.Uuid).FirstOrDefault();
+			if (toUpdate == null)
+				throw new Exception($"Task with uid {task.Uuid.ToString()} not found");
+
+			toUpdate.Completed = task.Completed;
+			toUpdate.Description = task.Description;
+			toUpdate.Notes = task.Notes;
+			toUpdate.TargetDate = task.TargetDate;
+			toUpdate.TargetDateIncludeTime = task.TargetDateIncludeTime;
+
+			return toUpdate;
 		}
 
 		public User UpdateUser(User user)

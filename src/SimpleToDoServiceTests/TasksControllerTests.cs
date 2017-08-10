@@ -126,5 +126,83 @@ namespace SimpleToDoServiceTests
 			Assert.Equal(3, objects?.Count());
 			Assert.Equal(user.Tasks, objects);
 		}
+
+		[Fact]
+		public async void TestBatchUpdate_Update()
+		{
+			var userGuid = Guid.NewGuid();
+			var user = Utils.NewUser(userGuid);
+			var updateTaskGuid = Guid.NewGuid();
+			user.AddTask("test task 1", updateTaskGuid);
+			user.AddTask("test task 2");
+
+			var user2 = Utils.NewUser();
+			user2.AddTask("other 1");
+			user2.AddTask("other 2");
+
+			var repo = new MockToDoRepository(new List<User>() { user, user2 });
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			controller.ControllerContext = new ControllerContext();
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
+
+			var instruction = new BatchUpdateInstruction()
+			{
+				ToCreate = new List<Task>(),
+				ToUpdate = new List<Task>() { new Task() { Uuid = updateTaskGuid, Description = "Updated task" } },
+				ToDelete = new List<Guid>()
+			};
+
+			var result = await controller.BatchUpdate(instruction) as OkObjectResult;
+
+			Assert.NotNull(result);
+
+			Assert.Equal(2, user.Tasks.Count());
+			Assert.Equal("Updated task", user.Tasks.Where(o => o.Uuid == updateTaskGuid).FirstOrDefault()?.Description);
+
+			var objects = (result.Value as IEnumerable<Task>).ToList();
+			Assert.NotNull(objects);
+			Assert.Equal(2, objects?.Count());
+			Assert.Equal(user.Tasks, objects);
+		}
+
+		[Fact]
+		public async void TestBatchUpdate_Delete()
+		{
+			var userGuid = Guid.NewGuid();
+			var user = Utils.NewUser(userGuid);
+			var deleteTaskGuid = Guid.NewGuid();
+			user.AddTask("test task 1", deleteTaskGuid);
+			user.AddTask("test task 2");
+
+			var user2 = Utils.NewUser();
+			user2.AddTask("other 1");
+			user2.AddTask("other 2");
+
+			var repo = new MockToDoRepository(new List<User>() { user, user2 });
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			controller.ControllerContext = new ControllerContext();
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
+
+			var instruction = new BatchUpdateInstruction()
+			{
+				ToCreate = new List<Task>(),
+				ToUpdate = new List<Task>(),
+				ToDelete = new List<Guid>() { deleteTaskGuid }
+			};
+
+			var result = await controller.BatchUpdate(instruction) as OkObjectResult;
+
+			Assert.NotNull(result);
+
+			Assert.Equal(1, user.Tasks.Count());
+			Assert.Null(user.Tasks.Where(o => o.Uuid == deleteTaskGuid).FirstOrDefault());
+
+			var objects = (result.Value as IEnumerable<Task>).ToList();
+			Assert.NotNull(objects);
+			Assert.Equal(1, objects?.Count());
+			Assert.Equal(user.Tasks, objects);
+		}
 	}
 }
