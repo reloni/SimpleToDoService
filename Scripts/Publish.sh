@@ -14,15 +14,16 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   export TAG=${TRAVIS_TAG}-$SUBTAG
 
   docker run -it -d --name builder microsoft/dotnet:1.1.2-sdk tail -f /dev/null
-  docker cp src/SimpleToDoService builder:app
-  docker cp src/SimpleToDoServiceTests builder:app
+  docker cp src/SimpleToDoService builder:app/service
+  docker cp src/SimpleToDoServiceTests builder:app/tests
 
-  docker exec builder bash -c 'cd /app; dotnet test ./src/SimpleToDoServiceTests/SimpleToDoServiceTests.csproj; exit $?'
-  
+  # run tests
+  docker exec builder bash -c 'cd /app/tests; dotnet restore; dotnet test ./SimpleToDoServiceTests.csproj; exit $?'
+
   if [ "$SUBTAG" = "release" ]; then
-    docker exec builder bash -c 'cd /app; dotnet restore; dotnet publish --configuration release -o "../published/release"; exit $?'
+    docker exec builder bash -c 'cd /app/service; dotnet restore; dotnet publish --configuration release -o "../published/release"; exit $?'
   else
-    docker exec builder bash -c 'cd /app; dotnet restore; dotnet publish --configuration debug -o "../published/debug"; exit $?'
+    docker exec builder bash -c 'cd /app/service; dotnet restore; dotnet publish --configuration debug -o "../published/debug"; exit $?'
   fi
   docker cp builder:published published
 
