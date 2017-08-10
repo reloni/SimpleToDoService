@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using SimpleToDoService.Entities;
 
-namespace SimpleToDoService
+namespace SimpleToDoService.Common
 {
 	public class BatchUpdateInstruction
 	{

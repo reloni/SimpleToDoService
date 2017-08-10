@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
+using SimpleToDoService.Common;
 
 namespace SimpleToDoService.Controllers
 {
@@ -44,7 +45,7 @@ namespace SimpleToDoService.Controllers
 #else
 			catch 
 			{
-				return StatusCode(401, new ServiceError() { Message = "Error while deleting user" });
+				return StatusCode(500, new ServiceError() { Message = "Error while deleting user" });
 			}
 #endif
 

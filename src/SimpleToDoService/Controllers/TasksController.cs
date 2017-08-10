@@ -9,7 +9,7 @@ using SimpleToDoService.Entities;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
 
-namespace SimpleToDoService
+namespace SimpleToDoService.Controllers
 {
 	[Authorize]
 	[MiddlewareFilter(typeof(CheckUserMiddleware))]
@@ -17,22 +17,24 @@ namespace SimpleToDoService
 	public class TasksController : Controller
 	{
 		private readonly IToDoRepository repository;
+		private readonly IPushNotificationScheduler pushScheduler;
 
 		public Guid CurrentUserUuid
 		{
 			get { return (Guid)HttpContext.Items["UserUuid"]; }
 		}
 
-		public TasksController(IToDoRepository repository)
+		public TasksController(IToDoRepository repository, IPushNotificationScheduler pushScheduler)
 		{
 			this.repository = repository;
+			this.pushScheduler = pushScheduler;
 		}
 
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
 		public IEnumerable<Task> Get(Guid? uuid)
 		{
 			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
-		
+
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
 			
@@ -111,7 +113,7 @@ namespace SimpleToDoService
 			entry.Completed = completed;
 			repository.UpdateTask(entry);
 
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(entry);
+			await pushScheduler.SchedulePushNotifications(entry);
 
 			return Ok(entry);
 		}
@@ -149,7 +151,7 @@ namespace SimpleToDoService
 				task.TargetDateIncludeTime = false;
 			
 			var created = repository.CreateTask(task);
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(created);
+			await pushScheduler.SchedulePushNotifications(created);
 			return created;
 		}
 
@@ -167,7 +169,7 @@ namespace SimpleToDoService
 
 			var reloaded = repository.ReloadTask(updated);
 
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(reloaded);
+			await pushScheduler.SchedulePushNotifications(reloaded);
 
 			return reloaded;
 		}
@@ -179,7 +181,7 @@ namespace SimpleToDoService
 				return false;
 
 			toDelete.TargetDate = null;
-			await new PushNotificationScheduler(repository).SchedulePushNotifications(toDelete);
+			await pushScheduler.SchedulePushNotifications(toDelete);
 
 			repository.DeleteTask(toDelete);
 
