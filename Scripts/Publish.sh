@@ -14,6 +14,9 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   export TAG=${TRAVIS_TAG}-$SUBTAG
 
   docker run -it -d --name builder microsoft/dotnet:1.1.2-sdk tail -f /dev/null
+
+  docker exec builder bash -c 'mkdir -p app/service; exit $?'
+  docker exec builder bash -c 'mkdir -p app/tests; exit $?'
   docker cp src/SimpleToDoService builder:app/service
   docker cp src/SimpleToDoServiceTests builder:app/tests
 
