@@ -17,8 +17,8 @@ if [ "${TRAVIS_TAG}" != "" ]; then
 
   docker exec builder bash -c 'mkdir -p app/service; exit $?'
   docker exec builder bash -c 'mkdir -p app/tests; exit $?'
-  docker cp src/SimpleToDoService builder:app/service
-  docker cp src/SimpleToDoServiceTests builder:app/tests
+  docker cp src/SimpleToDoService/. builder:app/service
+  docker cp src/SimpleToDoServiceTests/. builder:app/tests
 
   # run tests
   docker exec builder bash -c 'cd /app/tests; dotnet restore; dotnet test ./SimpleToDoServiceTests.csproj; exit $?'
