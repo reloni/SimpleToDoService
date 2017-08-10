@@ -24,9 +24,9 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   docker exec builder bash -c 'cd /app/SimpleToDoServiceTests; dotnet restore; dotnet test ./SimpleToDoServiceTests.csproj; exit $?'
 
   if [ "$SUBTAG" = "release" ]; then
-    docker exec builder bash -c 'cd /app/SimpleToDoService; dotnet restore; dotnet publish --configuration release -o "../published/release"; exit $?'
+    docker exec builder bash -c 'cd /app/SimpleToDoService; dotnet restore; dotnet publish --configuration release -o "../../published/release"; exit $?'
   else
-    docker exec builder bash -c 'cd /app/SimpleToDoService; dotnet restore; dotnet publish --configuration debug -o "../published/debug"; exit $?'
+    docker exec builder bash -c 'cd /app/SimpleToDoService; dotnet restore; dotnet publish --configuration debug -o "../../published/debug"; exit $?'
   fi
   docker cp builder:published published
 
