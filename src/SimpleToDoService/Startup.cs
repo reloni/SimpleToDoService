@@ -10,6 +10,9 @@ using SimpleToDoService.Context;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
 using SimpleToDoService.Common;
+using NLog.Extensions.Logging;
+using NLog.Web;
+using NLog;
 
 namespace SimpleToDoService
 {
@@ -55,6 +58,18 @@ namespace SimpleToDoService
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
 		{
+			//add NLog to ASP.NET Core
+			loggerFactory.AddNLog();
+
+			//add NLog.Web
+			app.AddNLogWeb();
+
+			//configure nlog.config in your project root. 
+			env.ConfigureNLog("nlog.config");
+
+
+			LogManager.Configuration.Variables["logdir"] = Environment.GetEnvironmentVariable("LOGS_DIRECTORY");
+
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();

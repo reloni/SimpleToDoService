@@ -26,7 +26,7 @@ namespace SimpleToDoServiceTests
 			user2.AddTask("other 2");
 
 			var repo = new MockToDoRepository(new List<User>() { user, user2 });
-			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo), null);
 			controller.ControllerContext = new ControllerContext();
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
@@ -49,7 +49,7 @@ namespace SimpleToDoServiceTests
 			user2.AddTask("other 2");
 
 			var repo = new MockToDoRepository(new List<User>() { user, user2 });
-			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo), null);
 			controller.ControllerContext = new ControllerContext();
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
@@ -75,7 +75,7 @@ namespace SimpleToDoServiceTests
 			user2.AddTask("other 2");
 
 			var repo = new MockToDoRepository(new List<User>() { user, user2 });
-			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo), null);
 			controller.ControllerContext = new ControllerContext();
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
@@ -104,7 +104,7 @@ namespace SimpleToDoServiceTests
 			user2.AddTask("other 2");
 
 			var repo = new MockToDoRepository(new List<User>() { user, user2 });
-			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo), null);
 			controller.ControllerContext = new ControllerContext();
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
@@ -141,7 +141,7 @@ namespace SimpleToDoServiceTests
 			user2.AddTask("other 2");
 
 			var repo = new MockToDoRepository(new List<User>() { user, user2 });
-			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo), null);
 			controller.ControllerContext = new ControllerContext();
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
@@ -180,7 +180,7 @@ namespace SimpleToDoServiceTests
 			user2.AddTask("other 2");
 
 			var repo = new MockToDoRepository(new List<User>() { user, user2 });
-			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo));
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo), null);
 			controller.ControllerContext = new ControllerContext();
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
