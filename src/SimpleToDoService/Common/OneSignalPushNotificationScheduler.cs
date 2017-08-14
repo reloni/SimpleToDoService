@@ -6,6 +6,8 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.IO;
+using Microsoft.Extensions.Logging;
+using NLog;
 
 namespace SimpleToDoService.Common
 {
@@ -17,10 +19,12 @@ namespace SimpleToDoService.Common
 	public class OneSignalPushNotificationScheduler : IPushNotificationScheduler
 	{
 		private readonly IToDoRepository repository;
+		private readonly ILogger<OneSignalPushNotificationScheduler> logger;
 
-		public OneSignalPushNotificationScheduler(IToDoRepository repository)
+		public OneSignalPushNotificationScheduler(IToDoRepository repository, ILogger<OneSignalPushNotificationScheduler> logger)
 		{
 			this.repository = repository;
+			this.logger = logger;
 		}
 
 		bool HasEqualDueDatest(Task task, PushNotification notification)
@@ -71,15 +75,17 @@ namespace SimpleToDoService.Common
 				}
 				await request.GetResponseAsync();
 			}
-#if DEBUG
 			catch (WebException ex)
 			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-				System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+				logger.LogError(0,
+								ex,
+								"Error while deleting push notification in OneSignal with response {0}",
+								new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
 			}
-#else
-			catch { }
-#endif
+			catch(Exception ex)
+			{
+				logger.LogError(0, ex, "Error while deleting push notification in OneSignal with response {0}");
+			}
 
 			repository.DeletePushNotification(notification);
 		}
@@ -112,6 +118,7 @@ namespace SimpleToDoService.Common
 
 			try
 			{
+				//throw new Exception("OLOLO error");
 				using (var writer = await request.GetRequestStreamAsync())
 				{
 					writer.Write(byteArray, 0, byteArray.Length);
@@ -136,15 +143,17 @@ namespace SimpleToDoService.Common
 					}
 				}
 			}
-#if DEBUG
 			catch (WebException ex)
-			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
-				System.Diagnostics.Debug.WriteLine(new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+			{				
+				logger.LogError(0, 
+				                ex, 
+				                "Error while creating push notification in OneSignal with response {0}", 
+				                new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
 			}
-#else
-			catch { }
-#endif
+			catch(Exception ex) 
+			{
+				logger.LogError(0, ex, "Error while creating push notification in OneSignal with response {0}");
+			}
 		}
 	}
 }

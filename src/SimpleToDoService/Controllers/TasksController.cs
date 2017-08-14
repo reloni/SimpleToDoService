@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using SimpleToDoService.Common;
 using SimpleToDoService.Entities;
 using SimpleToDoService.Middleware;
@@ -18,16 +19,18 @@ namespace SimpleToDoService.Controllers
 	{
 		private readonly IToDoRepository repository;
 		private readonly IPushNotificationScheduler pushScheduler;
+		private readonly ILogger<TasksController> logger;
 
 		public Guid CurrentUserUuid
 		{
 			get { return (Guid)HttpContext.Items["UserUuid"]; }
 		}
 
-		public TasksController(IToDoRepository repository, IPushNotificationScheduler pushScheduler)
+		public TasksController(IToDoRepository repository, IPushNotificationScheduler pushScheduler, ILogger<TasksController> logger)
 		{
 			this.repository = repository;
 			this.pushScheduler = pushScheduler;
+			this.logger = logger;
 		}
 
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
