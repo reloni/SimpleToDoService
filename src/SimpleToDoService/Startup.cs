@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using SimpleToDoService.Context;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
@@ -13,6 +12,8 @@ using SimpleToDoService.Common;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using NLog;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace SimpleToDoService
 {
@@ -43,6 +44,25 @@ namespace SimpleToDoService
 						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 					});
 
+			services.AddAuthorization(options => 
+			{ 
+				options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+					.RequireAuthenticatedUser()
+					.Build(); 
+			});
+			services.AddAuthentication(o =>
+			{
+				o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+				o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+			});
+
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o => 
+			{
+				o.Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+				o.Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY");
+			});
+
+			
 			var connectionString = Configuration["DbContextSettings:ConnectionString_Postgres"];
 			connectionString = connectionString.Replace("{USER_ID}", Environment.GetEnvironmentVariable("POSTGRES_USER"))
 							   .Replace("{PASSWORD}", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"))
@@ -75,21 +95,23 @@ namespace SimpleToDoService
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseJwtBearerAuthentication(new JwtBearerOptions
-			{
+			//app.UseJwtBearerAuthentication(new JwtBearerOptions
+			//{
 
-				AutomaticAuthenticate = true,
-				Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
-				TokenValidationParameters = new TokenValidationParameters
-				{
-					
-					ValidateIssuer = true,
-					ValidIssuer = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
-					ValidateAudience = true,
-					ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
-					ValidateLifetime = true
-				}
-			});
+			//	AutomaticAuthenticate = true,
+			//	Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
+			//	TokenValidationParameters = new TokenValidationParameters
+			//	{
+
+			//		ValidateIssuer = true,
+			//		ValidIssuer = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
+			//		ValidateAudience = true,
+			//		ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
+			//		ValidateLifetime = true
+			//	}
+			//});
+
+			app.UseAuthentication();
 
 			app.UseResponseCompression();
 
