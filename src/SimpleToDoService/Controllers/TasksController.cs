@@ -61,9 +61,6 @@ namespace SimpleToDoService.Controllers
 		[HttpPost]
 		public async System.Threading.Tasks.Task<IActionResult> Post([FromBody] Task entry)
 		{
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-			
 			if (entry == null)
 				return BadRequest();
 
@@ -77,9 +74,6 @@ namespace SimpleToDoService.Controllers
 		{
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
-
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
 
 			entry.Uuid = uuid.Value;
 
@@ -123,9 +117,6 @@ namespace SimpleToDoService.Controllers
 
 		[HttpPost("BatchUpdate")]
 		public async System.Threading.Tasks.Task<IActionResult> BatchUpdate([FromBody] BatchUpdateInstruction instruction) {
-			if (!ModelState.IsValid)
-				return BadRequest(ModelState);
-
 			foreach(var task in instruction.ToCreate)
 			{
 				var t = await CreateTask(task);

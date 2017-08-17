@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
 using SimpleToDoService.Common;
+using System.Net;
 
 namespace SimpleToDoService.Controllers
 {
@@ -34,18 +35,18 @@ namespace SimpleToDoService.Controllers
 
 			try
 			{
-				await Common.Auth0Client.DeleteUser(user.ProviderId);
+				await Auth0Client.DeleteUser(user.ProviderId);
 			}
 #if DEBUG
 			catch (Exception ex)
 			{
 				System.Diagnostics.Debug.WriteLine(ex.Message);
-				return StatusCode(500, new ServiceError() { Message = "Error while deleting user" });
+				return StatusCode((int)HttpStatusCode.InternalServerError, new ServiceError() { Message = "Error while deleting user" });
 			}
 #else
 			catch 
 			{
-				return StatusCode(500, new ServiceError() { Message = "Error while deleting user" });
+				return StatusCode((int)HttpStatusCode.InternalServerError, new ServiceError() { Message = "Error while deleting user" });
 			}
 #endif
 

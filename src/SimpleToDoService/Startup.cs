@@ -32,10 +32,10 @@ namespace SimpleToDoService
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddResponseCompression();
-			services.AddMvc()	        
-				.AddXmlSerializerFormatters()
-				.AddXmlDataContractSerializerFormatters()
-				.AddJsonOptions(o => 
+			services.AddMvc(options =>{ options.Filters.Add(typeof(ValidateModelAttribute)); })
+			        .AddXmlSerializerFormatters()
+			        .AddXmlDataContractSerializerFormatters()
+			        .AddJsonOptions(o =>
 					{
 						o.SerializerSettings.DateFormatString = "yyyy-MM-dd'T'HH:mm:ss.fffzz";
 						o.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
@@ -66,7 +66,6 @@ namespace SimpleToDoService
 
 			//configure nlog.config in your project root. 
 			env.ConfigureNLog("nlog.config");
-
 
 			LogManager.Configuration.Variables["logdir"] = Environment.GetEnvironmentVariable("LOGS_DIRECTORY");
 
