@@ -10,7 +10,8 @@ namespace SimpleToDoService.Controllers
 {
 	[Authorize]
 	[MiddlewareFilter(typeof(CheckUserMiddleware))]
-	[Route("api/v1/[controller]")]
+	[Route("api/v{version:apiVersion}/[controller]")]
+	[ApiVersion("1.0")]
 	public class UsersController : Controller
 	{
 		private readonly IToDoRepository repository;

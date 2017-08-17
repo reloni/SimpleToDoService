@@ -34,6 +34,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="1.1.2">
     </PackageReference>
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="1.2.1" />
   </ItemGroup>
 
   <ItemGroup>

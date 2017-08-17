@@ -13,6 +13,8 @@ using SimpleToDoService.Common;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using NLog;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleToDoService
 {
@@ -31,7 +33,17 @@ namespace SimpleToDoService
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddApiVersioning(options =>
+			{
+				options.ReportApiVersions = true;
+				options.ApiVersionReader = new QueryStringApiVersionReader();
+				options.AssumeDefaultVersionWhenUnspecified = true;
+				options.DefaultApiVersion = new ApiVersion(1, 0);
+				options.ApiVersionSelector = new CurrentImplementationApiVersionSelector(options);
+			});
+			
 			services.AddResponseCompression();
+
 			services.AddMvc(options =>{ options.Filters.Add(typeof(ValidateModelAttribute)); })
 			        .AddXmlSerializerFormatters()
 			        .AddXmlDataContractSerializerFormatters()

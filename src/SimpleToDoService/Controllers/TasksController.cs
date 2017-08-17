@@ -14,7 +14,8 @@ namespace SimpleToDoService.Controllers
 {
 	[Authorize]
 	[MiddlewareFilter(typeof(CheckUserMiddleware))]
-	[Route("api/v1/[controller]")]
+	[Route("api/v{version:apiVersion}/[controller]")]
+	[ApiVersion("1.0")]
 	public class TasksController : Controller
 	{
 		private readonly IToDoRepository repository;
@@ -33,6 +34,12 @@ namespace SimpleToDoService.Controllers
 			this.logger = logger;
 		}
 
+		//[HttpGet("{uuid:Guid?}", Name = "GetTaskV2"), MapToApiVersion("2.0")]
+		//public IActionResult GetV2(Guid? uuid)
+		//{
+		//	return new OkObjectResult(new { Ololo = "test" });
+		//}
+
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
 		public IEnumerable<Task> Get(Guid? uuid)
 		{
@@ -40,7 +47,7 @@ namespace SimpleToDoService.Controllers
 
 			if (uuid != null)
 				entries = entries.Where(o => o.Uuid == uuid);
-			
+
 			return entries;
 		}
 
