@@ -18,6 +18,12 @@ namespace SimpleToDoService.Common
 		public IEnumerable<Task> ToCreate { get; set; }
 	}
 
+	public class LogOutParameters
+	{
+		[Required]
+		public string RefreshToken { get; set; }
+	}
+
 	public class ServiceError
 	{
 		public string Message { get; set; }

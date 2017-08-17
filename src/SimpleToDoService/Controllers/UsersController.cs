@@ -5,6 +5,8 @@ using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
 using SimpleToDoService.Common;
 using System.Net;
+using System.IO;
+using Microsoft.Extensions.Logging;
 
 namespace SimpleToDoService.Controllers
 {
@@ -15,15 +17,17 @@ namespace SimpleToDoService.Controllers
 	public class UsersController : Controller
 	{
 		private readonly IToDoRepository repository;
+		private readonly ILogger<TasksController> logger;
 
 		public Guid CurrentUserUuid
 		{
 			get { return (Guid)HttpContext.Items["UserUuid"]; }
 		}
 
-		public UsersController(IToDoRepository repository)
+		public UsersController(IToDoRepository repository, ILogger<TasksController> logger)
 		{
 			this.repository = repository;
+			this.logger = logger;
 		}
 
 		[HttpDelete()]
@@ -38,22 +42,45 @@ namespace SimpleToDoService.Controllers
 			{
 				await Auth0Client.DeleteUser(user.ProviderId);
 			}
-#if DEBUG
+			catch (WebException ex)
+			{
+				logger.LogError(0,
+								ex,
+								"Error while deleting Auth0 user with response {0}",
+								new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+				return StatusCode((int)HttpStatusCode.InternalServerError, new ServiceError() { Message = "Error while deleting user" });
+			}
 			catch (Exception ex)
 			{
-				System.Diagnostics.Debug.WriteLine(ex.Message);
+				logger.LogError(0, ex, "Error while deleting Auth0 user");
 				return StatusCode((int)HttpStatusCode.InternalServerError, new ServiceError() { Message = "Error while deleting user" });
 			}
-#else
-			catch 
-			{
-				return StatusCode((int)HttpStatusCode.InternalServerError, new ServiceError() { Message = "Error while deleting user" });
-			}
-#endif
 
 			repository.DeleteUser(user);
 
 			return new StatusCodeResult(204);
+		}
+
+		[HttpPost("LogOut")]
+		public async System.Threading.Tasks.Task<IActionResult> LogOut([FromBody] LogOutParameters refreshToken) 
+		{
+			try
+			{
+				await Auth0Client.RevokeRefreshToken(refreshToken.RefreshToken);
+			}
+			catch (WebException ex)
+			{
+				logger.LogError(0,
+								ex,
+								"Error while revoking refresh token with response {0}",
+								new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
+			}
+			catch (Exception ex)
+			{
+				logger.LogError(0, ex, "Error while revoking refresh token");
+			}
+
+			return new StatusCodeResult(200);
 		}
 	}
 }

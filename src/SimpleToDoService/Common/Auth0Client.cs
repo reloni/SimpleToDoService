@@ -24,6 +24,30 @@ namespace SimpleToDoService.Common
 			using(var response = await request.GetResponseAsync()) { }
 		}
 
+		internal static async Task RevokeRefreshToken(string refreshToken)
+		{
+			var request = WebRequest.Create(new Uri("https://reloni.eu.auth0.com/oauth/revoke")) as HttpWebRequest;
+
+			request.Method = "POST";
+			request.ContentType = "application/json; charset=utf-8";
+
+			var requestJson = JObject.FromObject(new
+			{
+				client_id = Environment.GetEnvironmentVariable("AUTH0_APP_CLIENT_ID"),
+				client_secret = Environment.GetEnvironmentVariable("AUTH0_APP_CLIENT_SECRET"),
+				token = refreshToken
+			});
+
+			var byteArray = Encoding.UTF8.GetBytes(requestJson.ToString());
+
+			using (var writer = await request.GetRequestStreamAsync())
+			{
+				writer.Write(byteArray, 0, byteArray.Length);
+			}
+
+			using (var response = await request.GetResponseAsync()) { }
+		}
+
 		private static async Task<String> GetToken()
 		{
 			var request = WebRequest.Create("https://reloni.eu.auth0.com/oauth/token") as HttpWebRequest;
