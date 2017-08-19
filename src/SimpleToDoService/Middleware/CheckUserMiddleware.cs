@@ -43,7 +43,7 @@ namespace SimpleToDoService.Middleware
 		private Guid LoadUserGuid(HttpContext context)
 		{
 			var providerId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
-			var currentUser = repository.Users().Where(o => o.ProviderId == providerId).FirstOrDefault();
+			var currentUser = repository.UserByProviderId(providerId);
 
 			if (currentUser != null)
 			{
