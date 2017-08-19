@@ -38,8 +38,7 @@ namespace SimpleToDoService.Repository
 
 		public IEnumerable<Task> Tasks(Guid userUuid)
 		{
-			return context.Tasks.Where(o => o.User.Uuid == userUuid)
-				          .Include(o => o.PushNotifications);
+			return context.Tasks.Where(o => o.User.Uuid == userUuid);
 		}
 
 		public IEnumerable<User> Users()
