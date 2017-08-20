@@ -152,7 +152,7 @@ namespace SimpleToDoService.Common
 			}
 			catch(Exception ex) 
 			{
-				logger.LogError(0, ex, "Error while creating push notification in OneSignal with response {0}");
+				logger.LogError(0, ex, "Error while creating push notification in OneSignal");
 			}
 		}
 	}

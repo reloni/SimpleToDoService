@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -15,6 +15,8 @@ using NLog;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Mvc.Versioning;
+using Microsoft.AspNetCore.Mvc;
 
 namespace SimpleToDoService
 {
@@ -33,12 +35,21 @@ namespace SimpleToDoService
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddApiVersioning(options =>
+			{
+				options.ReportApiVersions = true;
+				options.ApiVersionReader = new QueryStringApiVersionReader();
+				options.AssumeDefaultVersionWhenUnspecified = true;
+				options.DefaultApiVersion = new ApiVersion(1, 0);
+				options.ApiVersionSelector = new CurrentImplementationApiVersionSelector(options);
+			});
+
 			services.AddResponseCompression();
 
-			services.AddMvc()	        
-				.AddXmlSerializerFormatters()
-				.AddXmlDataContractSerializerFormatters()
-				.AddJsonOptions(o => 
+			services.AddMvc(options =>{ options.Filters.Add(typeof(ValidateModelAttribute)); })
+			        .AddXmlSerializerFormatters()
+			        .AddXmlDataContractSerializerFormatters()
+			        .AddJsonOptions(o =>
 					{
 						o.SerializerSettings.DateFormatString = "yyyy-MM-dd'T'HH:mm:ss.fffzz";
 						o.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
@@ -46,20 +57,14 @@ namespace SimpleToDoService
 						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 					});
 
-			services.AddAuthorization(options => 
-			{ 
+			services.AddAuthorization(options =>
+			{
 				options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
 					.RequireAuthenticatedUser()
-					.Build(); 
+					.Build();
 			});
-			//services.AddAuthentication(o =>
-			//{
-			//	o.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-			//	o.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 
-			//});
-
-			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o => 
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
 			{
 				o.Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
 				o.Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY");
@@ -67,7 +72,7 @@ namespace SimpleToDoService
 				o.TokenValidationParameters.ValidateIssuer = true;
 				o.TokenValidationParameters.ValidateAudience = true;
 			});
-			
+
 			var connectionString = Configuration["DbContextSettings:ConnectionString_Postgres"];
 			connectionString = connectionString.Replace("{USER_ID}", Environment.GetEnvironmentVariable("POSTGRES_USER"))
 							   .Replace("{PASSWORD}", Environment.GetEnvironmentVariable("POSTGRES_PASSWORD"))
@@ -89,7 +94,7 @@ namespace SimpleToDoService
 			//add NLog.Web
 			app.AddNLogWeb();
 
-			//configure nlog.config in your project root. 
+			//configure nlog.config in your project root.
 			env.ConfigureNLog("nlog.config");
 
 			LogManager.Configuration.Variables["logdir"] = Environment.GetEnvironmentVariable("LOGS_DIRECTORY");
@@ -98,22 +103,6 @@ namespace SimpleToDoService
 			{
 				app.UseDeveloperExceptionPage();
 			}
-
-			//app.UseJwtBearerAuthentication(new JwtBearerOptions
-			//{
-
-			//	AutomaticAuthenticate = true,
-			//	Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
-			//	TokenValidationParameters = new TokenValidationParameters
-			//	{
-
-			//		ValidateIssuer = true,
-			//		ValidIssuer = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
-			//		ValidateAudience = true,
-			//		ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
-			//		ValidateLifetime = true
-			//	}
-			//});
 
 			app.UseAuthentication();
 
