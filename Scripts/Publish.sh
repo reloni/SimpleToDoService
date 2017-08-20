@@ -2,6 +2,18 @@
 
 set -e
 
+export DOTNETSDK="2.0.0-sdk-stretch"
+
+docker run -it -d --name builder microsoft/dotnet:"$DOTNETSDK" tail -f /dev/null
+
+docker exec builder bash -c 'mkdir -p app/SimpleToDoService; exit $?'
+docker exec builder bash -c 'mkdir -p app/SimpleToDoServiceTests; exit $?'
+docker cp src/SimpleToDoService/. builder:app/SimpleToDoService
+docker cp src/SimpleToDoServiceTests/. builder:app/SimpleToDoServiceTests
+
+# run tests
+docker exec builder bash -c 'cd /app/SimpleToDoServiceTests; dotnet restore; dotnet test ./SimpleToDoServiceTests.csproj; exit $?'
+
 if [ "${TRAVIS_TAG}" != "" ]; then
   # if tag doesn't contain word "beta" it's release build
   if [[ "$TRAVIS_TAG" != *"beta"* ]]; then
@@ -12,16 +24,6 @@ if [ "${TRAVIS_TAG}" != "" ]; then
 
   export REPO=${DOCKER_AWS_REPONAME}
   export TAG=${TRAVIS_TAG}-$SUBTAG
-
-  docker run -it -d --name builder microsoft/dotnet:1.1.2-sdk tail -f /dev/null
-
-  docker exec builder bash -c 'mkdir -p app/SimpleToDoService; exit $?'
-  docker exec builder bash -c 'mkdir -p app/SimpleToDoServiceTests; exit $?'
-  docker cp src/SimpleToDoService/. builder:app/SimpleToDoService
-  docker cp src/SimpleToDoServiceTests/. builder:app/SimpleToDoServiceTests
-
-  # run tests
-  docker exec builder bash -c 'cd /app/SimpleToDoServiceTests; dotnet restore; dotnet test ./SimpleToDoServiceTests.csproj; exit $?'
 
   if [ "$SUBTAG" = "release" ]; then
     docker exec builder bash -c 'cd /app/SimpleToDoService; dotnet restore; dotnet publish --configuration release -o "../../published/release"; exit $?'
