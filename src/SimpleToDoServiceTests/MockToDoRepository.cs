@@ -122,6 +122,11 @@ class MockToDoRepository : IToDoRepository
 			throw new NotImplementedException();
 		}
 
+		public User UserByProviderId(string providerId) 
+		{
+			throw new NotImplementedException();
+		}
+
 		public IEnumerable<User> Users()
 		{
 			throw new NotImplementedException();

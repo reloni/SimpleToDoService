@@ -46,6 +46,7 @@ namespace SimpleToDoService.Entities
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
+		[ForeignKey("UserUuid")]
 		public IEnumerable<Task> Tasks { get; set; }
 	}
 
@@ -54,6 +55,7 @@ namespace SimpleToDoService.Entities
 	{
 		[Key]
 		[Column("uuid")]
+		[Required]
 		public Guid Uuid { get; set; }
 
 		[Column("completed")]
@@ -93,6 +95,7 @@ namespace SimpleToDoService.Entities
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
+		[ForeignKey("TaskUuid")]
 		public IEnumerable<PushNotification> PushNotifications { get; set; }
 	}
 

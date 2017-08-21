@@ -1,11 +1,10 @@
-﻿﻿using System;
+﻿using System;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 using SimpleToDoService.Context;
 using SimpleToDoService.Middleware;
 using SimpleToDoService.Repository;
@@ -13,6 +12,8 @@ using SimpleToDoService.Common;
 using NLog.Extensions.Logging;
 using NLog.Web;
 using NLog;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc;
 
@@ -41,7 +42,7 @@ namespace SimpleToDoService
 				options.DefaultApiVersion = new ApiVersion(1, 0);
 				options.ApiVersionSelector = new CurrentImplementationApiVersionSelector(options);
 			});
-			
+
 			services.AddResponseCompression();
 
 			services.AddMvc(options =>{ options.Filters.Add(typeof(ValidateModelAttribute)); })
@@ -54,6 +55,22 @@ namespace SimpleToDoService
 						o.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 						o.SerializerSettings.NullValueHandling = Newtonsoft.Json.NullValueHandling.Ignore;
 					});
+
+			services.AddAuthorization(options =>
+			{
+				options.DefaultPolicy = new AuthorizationPolicyBuilder(JwtBearerDefaults.AuthenticationScheme)
+					.RequireAuthenticatedUser()
+					.Build();
+			});
+
+			services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(o =>
+			{
+				o.Audience = Environment.GetEnvironmentVariable("JWT_AUDIENCE");
+				o.Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY");
+				o.TokenValidationParameters.ValidateLifetime = true;
+				o.TokenValidationParameters.ValidateIssuer = true;
+				o.TokenValidationParameters.ValidateAudience = true;
+			});
 
 			var connectionString = Configuration["DbContextSettings:ConnectionString_Postgres"];
 			connectionString = connectionString.Replace("{USER_ID}", Environment.GetEnvironmentVariable("POSTGRES_USER"))
@@ -76,7 +93,7 @@ namespace SimpleToDoService
 			//add NLog.Web
 			app.AddNLogWeb();
 
-			//configure nlog.config in your project root. 
+			//configure nlog.config in your project root.
 			env.ConfigureNLog("nlog.config");
 
 			LogManager.Configuration.Variables["logdir"] = Environment.GetEnvironmentVariable("LOGS_DIRECTORY");
@@ -86,21 +103,7 @@ namespace SimpleToDoService
 				app.UseDeveloperExceptionPage();
 			}
 
-			app.UseJwtBearerAuthentication(new JwtBearerOptions
-			{
-
-				AutomaticAuthenticate = true,
-				Authority = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
-				TokenValidationParameters = new TokenValidationParameters
-				{
-					
-					ValidateIssuer = true,
-					ValidIssuer = Environment.GetEnvironmentVariable("JWT_AUTHORITY"),
-					ValidateAudience = true,
-					ValidAudience = Environment.GetEnvironmentVariable("JWT_AUDIENCE"),
-					ValidateLifetime = true
-				}
-			});
+			app.UseAuthentication();
 
 			app.UseResponseCompression();
 

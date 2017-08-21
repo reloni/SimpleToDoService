@@ -11,6 +11,7 @@ namespace SimpleToDoService.Repository
 	{
 		IEnumerable<User> Users();
 		User User(Guid uuid);
+		User UserByProviderId(string providerId);
 		IEnumerable<Task> Tasks(Guid userUuid);
 		Task Task(Guid userUuid, Guid taskUuid);
 		Task ReloadTask(Task task);
@@ -38,8 +39,7 @@ namespace SimpleToDoService.Repository
 
 		public IEnumerable<Task> Tasks(Guid userUuid)
 		{
-			return context.Tasks.Where(o => o.User.Uuid == userUuid)
-				          .Include(o => o.PushNotifications);
+			return context.Tasks.Where(o => o.User.Uuid == userUuid);
 		}
 
 		public IEnumerable<User> Users()
@@ -93,6 +93,11 @@ namespace SimpleToDoService.Repository
 		public User User(Guid uuid)
 		{
 			return context.Users.Where(o => o.Uuid == uuid).FirstOrDefault();
+		}
+
+		public User UserByProviderId(string providerId)
+		{
+			return context.Users.Where(o => o.ProviderId == providerId).FirstOrDefault();
 		}
 
 		public bool DeleteTask(Guid uuid)
