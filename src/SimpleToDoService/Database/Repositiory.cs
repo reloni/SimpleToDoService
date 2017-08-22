@@ -74,8 +74,30 @@ namespace SimpleToDoService.Repository
 			task.PushNotifications = new List<PushNotification>();
 			var entity = context.Tasks.Add(task);
 
-			if(context.SaveChanges() == 1)
-				return entity.Entity;
+			try
+			{
+				if (context.SaveChanges() == 1)
+					return entity.Entity;
+			}
+			catch(DbUpdateException ex)
+			{
+				var innerException = ex.InnerException as Npgsql.PostgresException;
+				if (innerException != null && innerException.SqlState == "23505")
+				{
+					// generate new uuid if it's duplicated
+					task.Uuid = new Guid();
+
+					DetachTask(entity.Entity);
+					entity = context.Tasks.Add(task);
+
+					if (context.SaveChanges() == 1)
+						return entity.Entity;
+				}
+				else
+				{
+					throw;
+				}
+			}
 
 			return null;
 		}
