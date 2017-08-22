@@ -40,14 +40,19 @@ namespace SimpleToDoService.Controllers
 		//}
 
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
-		public IEnumerable<Task> Get(Guid? uuid)
+		public IActionResult Get(Guid? uuid)
 		{
 			var entries = repository.Tasks(CurrentUserUuid).OrderBy(o => o.CreationDate).Where(o => !o.Completed);
 
 			if (uuid != null)
-				entries = entries.Where(o => o.Uuid == uuid);
-
-			return entries;
+			{
+				var entry = entries.Where(o => o.Uuid == uuid).FirstOrDefault();
+				if (entry == null)
+					return NotFound();
+				return new OkObjectResult(entry);
+			}
+				                 
+			return new OkObjectResult(entries);
 		}
 
 		[HttpGet("All")]
@@ -141,7 +146,7 @@ namespace SimpleToDoService.Controllers
 				await DeleteTask(uuid);
 			}
 
-			return Ok(Get(null));
+			return Get(null);
 		}
 
 		private async System.Threading.Tasks.Task<Task> CreateTask(Task task) 

@@ -31,8 +31,9 @@ namespace SimpleToDoServiceTests
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
 
-			var result = controller.Get(null);
-			Assert.Equal(2, result.Count());
+			var result = controller.Get(null) as OkObjectResult;
+			Assert.NotNull(result);
+			Assert.Equal(2, (result.Value as IEnumerable<Task>)?.Count());
 		}
 
 		[Fact]
@@ -54,12 +55,37 @@ namespace SimpleToDoServiceTests
 			controller.ControllerContext.HttpContext = new DefaultHttpContext();
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
 
-			var result = controller.Get(expectedGuid);
-			Assert.Equal(1, result.Count());
-			Assert.Equal(expectedGuid, result.FirstOrDefault()?.Uuid);
-			Assert.Equal(userGuid, result.FirstOrDefault()?.User.Uuid);
-			Assert.Equal(userGuid, result.FirstOrDefault()?.UserUuid);
-			Assert.Equal("test task 2", result.FirstOrDefault()?.Description);
+			var result = controller.Get(expectedGuid) as OkObjectResult;
+
+			Assert.NotNull(result);
+
+			var task = (result?.Value as Task);
+			Assert.Equal(expectedGuid, task?.Uuid);
+			Assert.Equal(userGuid, task?.User.Uuid);
+			Assert.Equal(userGuid, task?.UserUuid);
+			Assert.Equal("test task 2", task?.Description);
+		}
+
+		[Fact]
+		public void TestGetNotExistedTaskByGuid()
+		{
+			var userGuid = Guid.NewGuid();
+			var user = Utils.NewUser(userGuid);
+			user.AddTask("test task 1");
+			user.AddTask("test task 2");
+
+			var user2 = Utils.NewUser();
+			user2.AddTask("other 1");
+			user2.AddTask("other 2");
+
+			var repo = new MockToDoRepository(new List<User>() { user, user2 });
+			var controller = new TasksController(repo, new MockPushNotificationScheduler(repo), null);
+			controller.ControllerContext = new ControllerContext();
+			controller.ControllerContext.HttpContext = new DefaultHttpContext();
+			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
+
+			var result = controller.Get(Guid.NewGuid());
+			Assert.IsType<NotFoundObjectResult>(result);
 		}
 
 		[Fact]
@@ -81,6 +107,7 @@ namespace SimpleToDoServiceTests
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
 
 			var instruction = new BatchUpdateInstruction() { ToCreate = new List<Task>(), ToUpdate = new List<Task>(), ToDelete = new List<Guid>() };
+			var tst = await controller.BatchUpdate(instruction);
 			var result = await controller.BatchUpdate(instruction) as OkObjectResult;
 
 			Assert.NotNull(result);
