@@ -132,7 +132,8 @@ namespace SimpleToDoService.Controllers
 			foreach(var task in instruction.ToUpdate)
 			{
 				var t = await UpdateTask(task);
-				repository.DetachTask(t);
+				if (t != null)
+					repository.DetachTask(t);
 			}
 
 			foreach(var uuid in instruction.ToDelete)
