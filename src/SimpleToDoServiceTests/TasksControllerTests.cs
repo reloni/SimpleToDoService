@@ -85,7 +85,7 @@ namespace SimpleToDoServiceTests
 			controller.ControllerContext.HttpContext.Items.Add("UserUuid", userGuid);
 
 			var result = controller.Get(Guid.NewGuid());
-			Assert.IsType<NotFoundObjectResult>(result);
+			Assert.IsType<NotFoundResult>(result);
 		}
 
 		[Fact]
