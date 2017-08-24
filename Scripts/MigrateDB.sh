@@ -7,13 +7,8 @@ fi
 
 DBVERSION=$(psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -t -c 'select version from dbversion limit 1;')
 
-if [ "$DBVERSION" -eq "0" ]; then
-	echo "Initialize DB" >> ${MIGRATE_LOG}
-	cat /CreateDB.sql | psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} >> ${MIGRATE_LOG} 2>&1
-	cat /Migrations/1.sql | psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} >> ${MIGRATE_LOG} 2>&1
-elif [ "$DBVERSION" -eq "1" ]; then
-	echo "Migrate DB to ver 2" >> ${MIGRATE_LOG}
-	cat /Migrations/1.sql | psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} >> ${MIGRATE_LOG} 2>&1
-else
-	echo "Unknown DB version $DBVERSION" >> ${MIGRATE_LOG}
-fi
+echo "DB version before migrations $DBVERSION" >> ${MIGRATE_LOG}
+(cd ./Migrations && ls | sort -n | xargs -n 1 psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -f >> ${MIGRATE_LOG} 2>&1)
+
+DBVERSION=$(psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -t -c 'select version from dbversion limit 1;')
+echo "DB version after migrations $DBVERSION" >> ${MIGRATE_LOG}
