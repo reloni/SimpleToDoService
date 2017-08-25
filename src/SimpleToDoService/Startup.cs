@@ -21,7 +21,8 @@ namespace SimpleToDoService
 {
 	public class Startup
 	{
-		public IConfigurationRoot Configuration { get; }
+		IConfigurationRoot Configuration { get; }
+		IHostingEnvironment HostingEnvironment { get; set; }
 
 		public Startup(IHostingEnvironment env)
 		{
@@ -30,6 +31,7 @@ namespace SimpleToDoService
 				.AddJsonFile("AppSettings.json", optional: false, reloadOnChange: true)
 				.AddEnvironmentVariables();
 			Configuration = builder.Build();
+			HostingEnvironment = env;
 		}
 
 		public void ConfigureServices(IServiceCollection services)
@@ -83,6 +85,13 @@ namespace SimpleToDoService
 			services.AddScoped<IToDoDbContext, ToDoDbContext>();
 			services.AddScoped<IToDoRepository, ToDoRepository>();
 			services.AddScoped<IPushNotificationScheduler, OneSignalPushNotificationScheduler>();
+
+			if (HostingEnvironment.IsDevelopment())
+			{
+				services.AddScoped<IPushNotificationScheduler, DummyPushNotificationScheduler>();
+			} else {
+				services.AddScoped<IPushNotificationScheduler, OneSignalPushNotificationScheduler>();
+			}
 		}
 
 		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
