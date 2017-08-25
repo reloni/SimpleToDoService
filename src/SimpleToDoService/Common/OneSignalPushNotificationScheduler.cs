@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.IO;
 using Microsoft.Extensions.Logging;
-using NLog;
 
 namespace SimpleToDoService.Common
 {
@@ -16,15 +15,31 @@ namespace SimpleToDoService.Common
 		System.Threading.Tasks.Task SchedulePushNotifications(Task task);
 	}
 
+	public class DummyPushNotificationScheduler : IPushNotificationScheduler
+	{
+		readonly ILogger<DummyPushNotificationScheduler> Logger;
+
+		public DummyPushNotificationScheduler(ILogger<DummyPushNotificationScheduler> logger) 
+		{
+			this.Logger = logger;	
+		}
+
+		public System.Threading.Tasks.Task SchedulePushNotifications(Task task)
+		{
+			Logger.LogInformation(0, "SchedulePushNotifications invoked");
+			return System.Threading.Tasks.Task.FromResult(0);
+		}
+	}
+
 	public class OneSignalPushNotificationScheduler : IPushNotificationScheduler
 	{
-		private readonly IToDoRepository repository;
-		private readonly ILogger<OneSignalPushNotificationScheduler> logger;
+		readonly IToDoRepository Repository;
+		readonly ILogger<OneSignalPushNotificationScheduler> Logger;
 
 		public OneSignalPushNotificationScheduler(IToDoRepository repository, ILogger<OneSignalPushNotificationScheduler> logger)
 		{
-			this.repository = repository;
-			this.logger = logger;
+			this.Repository = repository;
+			this.Logger = logger;
 		}
 
 		bool HasEqualDueDatest(Task task, PushNotification notification)
@@ -77,17 +92,17 @@ namespace SimpleToDoService.Common
 			}
 			catch (WebException ex)
 			{
-				logger.LogError(0,
+				Logger.LogError(0,
 								ex,
 								"Error while deleting push notification in OneSignal with response {0}",
 								new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
 			}
 			catch(Exception ex)
 			{
-				logger.LogError(0, ex, "Error while deleting push notification in OneSignal with response {0}");
+				Logger.LogError(0, ex, "Error while deleting push notification in OneSignal with response {0}");
 			}
 
-			repository.DeletePushNotification(notification);
+			Repository.DeletePushNotification(notification);
 		}
 
 		private async System.Threading.Tasks.Task CreatePushNotification(Task task)
@@ -110,7 +125,7 @@ namespace SimpleToDoService.Common
 				headings = new { en = "Task notification" },
 				content_available = true,
 				mutable_content = true,
-				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = repository.User(task.UserUuid).ProviderId } },
+				filters = new[] { new { field = "tag", key = "user_id", relation = "=", value = Repository.User(task.UserUuid).ProviderId } },
 				send_after = notificationDate.Value.ToString("yyyy-MM-dd HH:mm:ss 'GMT'zzzz")
 			});
 
@@ -139,20 +154,20 @@ namespace SimpleToDoService.Common
 							DueDate = notificationDate.Value
 						};
 
-						repository.CreatePushNotification(notification);
+						Repository.CreatePushNotification(notification);
 					}
 				}
 			}
 			catch (WebException ex)
 			{				
-				logger.LogError(0, 
+				Logger.LogError(0, 
 				                ex, 
 				                "Error while creating push notification in OneSignal with response {0}", 
 				                new StreamReader(ex.Response.GetResponseStream()).ReadToEnd());
 			}
 			catch(Exception ex) 
 			{
-				logger.LogError(0, ex, "Error while creating push notification in OneSignal");
+				Logger.LogError(0, ex, "Error while creating push notification in OneSignal");
 			}
 		}
 	}
