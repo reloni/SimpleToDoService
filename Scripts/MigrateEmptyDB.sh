@@ -1,3 +1,7 @@
+#!/bin/bash
+
+set -e
+
 docker stop migrateempty
 docker run -d --rm --name migrateempty -p 5432:5432 reloni/todo-postgres:latest
 
