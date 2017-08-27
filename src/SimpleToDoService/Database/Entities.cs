@@ -50,6 +50,26 @@ namespace SimpleToDoService.Entities
 		public IEnumerable<Task> Tasks { get; set; }
 	}
 
+	[Table("taskprototype")]
+	public class TaskPrototype
+	{
+		[Key]
+		[Column("uuid")]
+		[Required]
+		public Guid Uuid { get; set; }
+
+		[Column("cronexpression")]
+		[Required]
+		[MaxLength(25)]
+		public string CronExpression { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[ForeignKey("TaskPrototypeUuid")]
+		public IEnumerable<Task> Tasks { get; set; }
+	}
+
 	[Table("task")]
 	public class Task
 	{
@@ -97,6 +117,15 @@ namespace SimpleToDoService.Entities
 		[IgnoreDataMember]
 		[ForeignKey("TaskUuid")]
 		public IEnumerable<PushNotification> PushNotifications { get; set; }
+
+		[XmlIgnore]
+		[JsonIgnore]
+		[IgnoreDataMember]
+		[Column("taskprototype")]
+		public Guid TaskPrototypeUuid { get; set; }
+
+		[ForeignKey("TaskPrototypeUuid")]
+		public TaskPrototype Prototype { get; set; }
 	}
 
 	[Table("pushnotification")]
