@@ -26,6 +26,7 @@ COPY ./Scripts/RestoreDB.sh /RestoreDB.sh
 COPY ./Scripts/MigrateDB.sh /MigrateDB.sh
 RUN chmod +x /MigrateDB.sh
 
-COPY ./Scripts/Migrations .
+RUN mkdir Migrations
+COPY ./Scripts/Migrations /Migrations
 
 ENTRYPOINT ["/secrets-entrypoint.sh"]
