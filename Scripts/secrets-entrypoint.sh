@@ -7,7 +7,7 @@ if [ "$RESTORE_BACKUP" = "YES" ]; then
 fi
 
 #migrate database
-sh /MigrateDB.sh
+(cd / && sh /MigrateDB.sh)
 
 if [ "$LOAD_S3_SECRETS" = "YES" ]; then
   # Load the S3 secrets file contents into the environment variables
