@@ -39,3 +39,5 @@ Thumbs.db
 # dotCover
 *.dotCover
 /Publish
+/Scripts/migrate.log
+/Scripts/restore.log
