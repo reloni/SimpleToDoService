@@ -155,6 +155,11 @@ namespace SimpleToDoService.Controllers
 
 			if (!task.TargetDate.HasValue)
 				task.TargetDateIncludeTime = false;
+
+			if (task.Prototype == null)
+			{
+				task.Prototype = new TaskPrototype() { Uuid = Guid.NewGuid() };
+			}
 			
 			var created = repository.CreateTask(task);
 			await pushScheduler.SchedulePushNotifications(created);

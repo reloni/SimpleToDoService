@@ -125,6 +125,7 @@ namespace SimpleToDoService.Entities
 		public Guid TaskPrototypeUuid { get; set; }
 
 		[ForeignKey("TaskPrototypeUuid")]
+		[Required]
 		public TaskPrototype Prototype { get; set; }
 	}
 

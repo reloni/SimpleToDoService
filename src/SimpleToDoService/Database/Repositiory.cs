@@ -18,7 +18,6 @@ namespace SimpleToDoService.Repository
 		Task CreateTask(Task task);
 		Task UpdateTask(Task task);
 		void DetachTask(Task task);
-		bool DeleteTask(Guid uuid);
 		bool DeleteTask(Task task);
 		User CreateUser(User user);
 		bool DeleteUser(User user);
@@ -52,6 +51,7 @@ namespace SimpleToDoService.Repository
 		{
 			return context.Tasks.Where(o => o.User.Uuid == userUuid && o.Uuid == entryUuid)
 				          .Include(o => o.PushNotifications)
+				          .Include(o => o.Prototype)
 				          .FirstOrDefault();
 		}
 
@@ -73,6 +73,13 @@ namespace SimpleToDoService.Repository
 			
 			task.CreationDate = DateTime.Now.ToUniversalTime();
 			task.PushNotifications = new List<PushNotification>();
+			var prototype = context.TaskPrototypes.Find(task.Prototype.Uuid);
+			if (prototype != null)
+			{
+				prototype.CronExpression = task.Prototype.CronExpression;
+				task.Prototype = prototype;
+			}
+
 			var entity = context.Tasks.Add(task);
 
 			try
@@ -86,12 +93,12 @@ namespace SimpleToDoService.Repository
 				if (innerException != null && innerException.SqlState == "23505")
 				{
 					// generate new uuid if it's duplicated
-					task.Uuid = new Guid();
+					task.Uuid = Guid.NewGuid();
 
 					DetachTask(entity.Entity);
 					entity = context.Tasks.Add(task);
 
-					if (context.SaveChanges() == 1)
+					if (context.SaveChanges() > 0)
 						return entity.Entity;
 				}
 				else
@@ -107,7 +114,7 @@ namespace SimpleToDoService.Repository
 		{
 			var updated = context.UpdateTask(task);
 			context.Entry(task).Property(p => p.CreationDate).IsModified = false;
-			if(context.SaveChanges() == 1)
+			if(context.SaveChanges() > 0)
 				return updated;
 
 			return null;
@@ -123,29 +130,20 @@ namespace SimpleToDoService.Repository
 			return context.Users.Where(o => o.ProviderId == providerId).FirstOrDefault();
 		}
 
-		public bool DeleteTask(Guid uuid)
-		{
-			var task = new Task() { Uuid = uuid };
-			context.Tasks.Attach(task);
-			context.Tasks.Remove(task);
-			try
-			{
-				context.SaveChanges();
-			}
-			catch (DbUpdateConcurrencyException)
-			{
-				// entity doesn't exists in this case
-				return false;
-			}
-			return true;
-		}
-
 		public bool DeleteTask(Task task)
 		{
 			context.Tasks.Remove(task);
+
 			try
 			{
 				context.SaveChanges();
+
+				// after task deletion delete task prototype if it has no children)
+				if (task.Prototype != null)
+				{
+					DeleteTaskPrototypeIfEmpty(task.Prototype.Uuid);
+					context.SaveChanges();
+				}
 			}
 			catch (DbUpdateConcurrencyException)
 			{
@@ -185,7 +183,7 @@ namespace SimpleToDoService.Repository
 		{
 			var updated = context.UpdateUser(user);
 			context.Entry(user).Property(p => p.CreationDate).IsModified = false;
-			if (context.SaveChanges() == 1)
+			if (context.SaveChanges() > 0)
 				return updated;
 
 			return null;
@@ -197,7 +195,7 @@ namespace SimpleToDoService.Repository
 
 			var entity = context.PushNotifications.Add(notification);
 
-			if (context.SaveChanges() == 1)
+			if (context.SaveChanges() > 0)
 				return entity.Entity;
 
 			return null;
@@ -223,6 +221,23 @@ namespace SimpleToDoService.Repository
 			}
 
 			return true;
+		}
+
+		void DeleteTaskPrototypeIfEmpty(Guid uuid)
+		{
+			var prototype = context.TaskPrototypes.Where(o => o.Uuid == uuid).FirstOrDefault();
+			if (prototype == null)
+				return;
+			
+			if (context.Tasks.Where(o => o.TaskPrototypeUuid == uuid).Count() == 0)
+			{
+				context.TaskPrototypes.Remove(prototype);
+				try
+				{
+					context.SaveChanges();
+				}
+				catch { }
+			}
 		}
 	}
 }

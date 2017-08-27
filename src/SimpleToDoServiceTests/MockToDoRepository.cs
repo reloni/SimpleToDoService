@@ -51,11 +51,6 @@ class MockToDoRepository : IToDoRepository
 			throw new NotImplementedException();
 		}
 
-		public bool DeleteTask(Guid uuid)
-		{
-			throw new NotImplementedException();
-		}
-
 		public bool DeleteTask(Task task)
 		{
 			var user = GetUser(task.UserUuid);
@@ -128,6 +123,11 @@ class MockToDoRepository : IToDoRepository
 		}
 
 		public IEnumerable<User> Users()
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DeleteTaskPrototypeIfNoUncompletedChildren(Guid uuid)
 		{
 			throw new NotImplementedException();
 		}
