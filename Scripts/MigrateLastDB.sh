@@ -2,7 +2,7 @@
 
 set -e
 
-docker stop migratelast
+docker stop migratelast || true
 docker run -d --rm --name migratelast -p 5432:5432 reloni/todo-postgres:latest
 
 export POSTGRES_USER=postgres
