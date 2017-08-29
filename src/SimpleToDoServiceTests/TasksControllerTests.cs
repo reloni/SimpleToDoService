@@ -5,8 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Common;
 using SimpleToDoService.Controllers;
-using SimpleToDoService.Entities;
-using SimpleToDoService.Repository;
+using SimpleToDoService.DB;
 using Xunit;
 
 namespace SimpleToDoServiceTests

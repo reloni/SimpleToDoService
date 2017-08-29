@@ -1,8 +1,5 @@
-﻿using System;
-using System.Threading.Tasks;
-using SimpleToDoService.Common;
-using SimpleToDoService.Entities;
-using SimpleToDoService.Repository;
+﻿using SimpleToDoService.Common;
+using SimpleToDoService.DB;
 
 namespace SimpleToDoServiceTests
 {
@@ -15,7 +12,7 @@ namespace SimpleToDoServiceTests
 			this.repo = repository;
 		}
 
-		public System.Threading.Tasks.Task SchedulePushNotifications(SimpleToDoService.Entities.Task task)
+		public System.Threading.Tasks.Task SchedulePushNotifications(SimpleToDoService.DB.Task task)
 		{
 			return System.Threading.Tasks.Task.FromResult(0);
 		}

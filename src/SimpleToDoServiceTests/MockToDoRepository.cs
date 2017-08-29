@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleToDoService.Entities;
-using SimpleToDoService.Repository;
+using SimpleToDoService.DB;
 
 namespace SimpleToDoServiceTests
 {

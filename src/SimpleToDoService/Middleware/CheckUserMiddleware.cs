@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Net.Http.Headers;
 using System.Linq;
-using Microsoft.EntityFrameworkCore;
-using SimpleToDoService.Repository;
-using SimpleToDoService.Context;
 using Microsoft.AspNetCore.Builder;
 using System.Security.Claims;
-using SimpleToDoService.Entities;
+using SimpleToDoService.DB;
 
 namespace SimpleToDoService.Middleware
 {
