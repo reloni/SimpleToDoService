@@ -129,6 +129,7 @@ namespace SimpleToDoServiceTests
 			Assert.Equal(3, objects?.Count());
 			Assert.True(context.Tasks.Where(o => o.Uuid == taskToCreate.Uuid).Count() == 1);
 			Assert.True(context.TaskPrototypes.Count() == 5);
+			Assert.True(context.Tasks.Count() == 5);
 		}
 
 		[Fact]
@@ -161,6 +162,7 @@ namespace SimpleToDoServiceTests
 
 			Assert.Equal("Updated task", context.Tasks.Where(o => o.Uuid == taskToUpdate.Uuid).FirstOrDefault()?.Description);
 			Assert.Equal(4, context.Tasks.Count());
+			Assert.Equal(4, context.TaskPrototypes.Count());
 
 			var objects = (result.Value as IEnumerable<Task>).ToList();
 			Assert.NotNull(objects);
