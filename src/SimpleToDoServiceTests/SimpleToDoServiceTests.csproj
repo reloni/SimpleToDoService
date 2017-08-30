@@ -13,4 +13,8 @@
   <ItemGroup>
     <ProjectReference Include="..\SimpleToDoService\SimpleToDoService.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="MockToDoRepository.cs" />
+    <Compile Remove="InMemoryDBTests.cs" />
+  </ItemGroup>
 </Project>

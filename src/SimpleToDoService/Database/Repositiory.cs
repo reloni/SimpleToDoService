@@ -88,7 +88,7 @@ namespace SimpleToDoService.DB
 
 			try
 			{
-				if (context.SaveChanges() == 1)
+				if (context.SaveChanges() > 0)
 					return entity.Entity;
 			}
 			catch(DbUpdateException ex)
