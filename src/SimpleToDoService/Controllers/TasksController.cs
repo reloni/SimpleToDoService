@@ -31,12 +31,6 @@ namespace SimpleToDoService.Controllers
 			this.logger = logger;
 		}
 
-		//[HttpGet("{uuid:Guid?}", Name = "GetTaskV2"), MapToApiVersion("2.0")]
-		//public IActionResult GetV2(Guid? uuid)
-		//{
-		//	return new OkObjectResult(new { Ololo = "test" });
-		//}
-
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
 		public IActionResult Get(Guid? uuid)
 		{
@@ -99,21 +93,6 @@ namespace SimpleToDoService.Controllers
 		{
 			if (!uuid.HasValue)
 				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
-
-			var deleted = await DeleteTask(uuid.Value);
-
-			if (!deleted)
-				return new NotFoundResult();
-
-			return new StatusCodeResult(204);
-		}
-
-		[HttpDelete("taskprototype/{uuid:Guid?}")]
-		public async System.Threading.Tasks.Task<IActionResult> DeleteTaskPrototype(Guid? uuid)
-		{
-			if (!uuid.HasValue)
-				return BadRequest(new ServiceError() { Message = "Object Uuid not specified" });
-
 
 			var deleted = await DeleteTask(uuid.Value);
 
