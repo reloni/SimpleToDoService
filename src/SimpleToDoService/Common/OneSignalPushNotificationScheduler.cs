@@ -1,6 +1,5 @@
 ﻿using System;
-using SimpleToDoService.Entities;
-using SimpleToDoService.Repository;
+using SimpleToDoService.DB;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Linq;

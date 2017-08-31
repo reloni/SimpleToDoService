@@ -1,52 +1,82 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using SimpleToDoService.Entities;
+using Microsoft.EntityFrameworkCore;
+using SimpleToDoService.DB;
 
 namespace SimpleToDoServiceTests
 {
 	class Utils
 	{
-		public static User NewUser(Guid? guid = null, string providerId = "", string email = "")
+		public static DbContextOptions<ToDoDbContext> InMemoryContextOptions(string dbName) 
 		{
-			return new User() { Uuid = guid ?? Guid.NewGuid(), ProviderId = providerId, Email = email, CreationDate = DateTime.Now, Tasks = new List<Task>() };
+			return new DbContextOptionsBuilder<ToDoDbContext>()
+					  .UseInMemoryDatabase(dbName)
+					  .Options;
+		}
+
+		public static ToDoDbContext InMemoryContext()
+		{
+			var options = new DbContextOptionsBuilder<ToDoDbContext>()
+					  .UseInMemoryDatabase(Guid.NewGuid().ToString())
+					  .Options;
+			return new ToDoDbContext(options);
 		}
 	}
 
 	static class Extensions
 	{
-		public static Task Copy(this Task task) 
+		public static void AddTestData(this ToDoDbContext context)
 		{
-			return new Task()
-			{ 
-				Completed = task.Completed,
-				CreationDate = task.CreationDate,
-				Description = task.Description,
-				Notes = task.Notes,
-				PushNotifications = null,
-				UserUuid = task.UserUuid,
-				Uuid = task.Uuid,
-				TargetDate = task.TargetDate,
-				TargetDateIncludeTime = task.TargetDateIncludeTime,
-				User = task.User
-			};
-		}
+			context.Add(new User() { ProviderId = "TestUser1", Uuid = Guid.NewGuid() });
+			context.Add(new User() { ProviderId = "TestUser2", Uuid = Guid.NewGuid() });
 
-		public static void AddTask(this User user, string description, Guid? guid = null, bool completed = false, string notes = "", DateTime? targetDate = null, bool targetDateIncludeTime = true)
-		{
-			(user.Tasks as List<Task>).Add(new Task()
+			context.TaskPrototypes.Add(new TaskPrototype() { CronExpression = "", Uuid = Guid.NewGuid() });
+			context.TaskPrototypes.Add(new TaskPrototype() { CronExpression = "", Uuid = Guid.NewGuid() });
+			context.TaskPrototypes.Add(new TaskPrototype() { CronExpression = "", Uuid = Guid.NewGuid() });
+			context.TaskPrototypes.Add(new TaskPrototype() { CronExpression = "", Uuid = Guid.NewGuid() });
+
+			context.SaveChanges();
+
+			context.Add(new Task()
 			{
-				Uuid = guid ?? Guid.NewGuid(),
+				Uuid = Guid.NewGuid(),
+				Completed = false,
 				CreationDate = DateTime.Now,
-				User = user,
-				UserUuid = user.Uuid,
-				Completed = completed,
-				Description = description,
-				Notes = notes,
-				TargetDate = targetDate,
-				TargetDateIncludeTime = targetDateIncludeTime,
-				PushNotifications = Enumerable.Empty<PushNotification>()
+				UserUuid = context.Users.First().Uuid,
+				Description = "Task 1",
+				TaskPrototypeUuid = context.TaskPrototypes.First().Uuid
 			});
+			context.Add(new Task()
+			{
+				Uuid = Guid.NewGuid(),
+				Completed = false,
+				CreationDate = DateTime.Now,
+				UserUuid = context.Users.First().Uuid,
+				Description = "Task 2",
+				TaskPrototypeUuid = context.TaskPrototypes.Skip(1).First().Uuid
+			});
+
+			context.Add(new Task()
+			{
+				Uuid = Guid.NewGuid(),
+				Completed = false,
+				CreationDate = DateTime.Now,
+				User = context.Users.Skip(1).First(),
+				Description = "Task 3",
+				TaskPrototypeUuid = context.TaskPrototypes.Skip(2).First().Uuid
+			});
+			context.Add(new Task()
+			{
+				Uuid = Guid.NewGuid(),
+				Completed = false,
+				CreationDate = DateTime.Now,
+				User = context.Users.Skip(1).First(),
+				Description = "Task 4",
+				TaskPrototypeUuid = context.TaskPrototypes.Skip(3).First().Uuid
+			});
+
+			context.SaveChanges();
 		}
 	}
 }

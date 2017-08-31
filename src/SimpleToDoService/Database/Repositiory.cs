@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using SimpleToDoService.Entities;
 using System.Linq;
-using SimpleToDoService.Context;
 
-namespace SimpleToDoService.Repository
+namespace SimpleToDoService.DB
 {
 	public interface IToDoRepository
 	{
@@ -41,6 +39,12 @@ namespace SimpleToDoService.Repository
 			return context.Tasks.Where(o => o.User.Uuid == userUuid)
 				          .Include(o => o.Prototype);
 		}
+
+		//public IQueryable<Task> Tasks2(Guid userUuid)
+		//{
+		//	return context.Tasks.Where(o => o.User.Uuid == userUuid)
+		//				  .Include(o => o.Prototype);
+		//}
 
 		public IEnumerable<User> Users()
 		{
@@ -84,7 +88,7 @@ namespace SimpleToDoService.Repository
 
 			try
 			{
-				if (context.SaveChanges() == 1)
+				if (context.SaveChanges() > 0)
 					return entity.Entity;
 			}
 			catch(DbUpdateException ex)

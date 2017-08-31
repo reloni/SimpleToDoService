@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleToDoService.Middleware;
-using SimpleToDoService.Repository;
+using SimpleToDoService.DB;
 using SimpleToDoService.Common;
 using System.Net;
 using System.IO;

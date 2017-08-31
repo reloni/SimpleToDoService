@@ -5,10 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using SimpleToDoService.Common;
-using SimpleToDoService.Entities;
 using SimpleToDoService.Middleware;
-using SimpleToDoService.Repository;
-
+using SimpleToDoService.DB;
 namespace SimpleToDoService.Controllers
 {
 	[Authorize]
@@ -32,12 +30,6 @@ namespace SimpleToDoService.Controllers
 			this.pushScheduler = pushScheduler;
 			this.logger = logger;
 		}
-
-		//[HttpGet("{uuid:Guid?}", Name = "GetTaskV2"), MapToApiVersion("2.0")]
-		//public IActionResult GetV2(Guid? uuid)
-		//{
-		//	return new OkObjectResult(new { Ololo = "test" });
-		//}
 
 		[HttpGet("{uuid:Guid?}", Name = "GetTask")]
 		public IActionResult Get(Guid? uuid)

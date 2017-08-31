@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Xml.Serialization;
 using Newtonsoft.Json;
 
-namespace SimpleToDoService.Entities
+namespace SimpleToDoService.DB
 {
 	[Table("taskuser")]
 	public class User

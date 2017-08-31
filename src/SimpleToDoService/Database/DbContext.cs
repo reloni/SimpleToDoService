@@ -1,9 +1,8 @@
 ﻿using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
-using SimpleToDoService.Entities;
 
-namespace SimpleToDoService.Context
+namespace SimpleToDoService.DB
 {
 	public interface IToDoDbContext
 	{
