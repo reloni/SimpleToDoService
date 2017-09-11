@@ -37,6 +37,9 @@ BEGIN
   set version = 3
   where version = 2;
 
+  DROP EXTENSION IF EXISTS "uuid-ossp";
+  raise notice 'Drop EXTENSION uuid-ossp';
+
   end if;
 
   raise notice 'Complete';
