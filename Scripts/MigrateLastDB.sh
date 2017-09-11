@@ -19,7 +19,7 @@ sleep 7
 
 aws s3 --region ${SECRETS_BUCKET_REGION} cp s3://${BACKUPS_BUCKET_NAME}/latest.psql.gz ./latest.psql.gz
 #restore backup
-gunzip -c ./latest.psql.gz | psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} >> ${BACKUP_RESTORE_LOG} 2>&1 && \
+gunzip -c ./latest.psql.gz | pg_restore --clean --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} >> ${BACKUP_RESTORE_LOG} 2>&1 && \
 rm ./latest.psql.gz
 
 sh MigrateDB.sh
