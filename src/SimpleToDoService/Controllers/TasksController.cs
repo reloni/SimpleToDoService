@@ -124,13 +124,17 @@ namespace SimpleToDoService.Controllers
 			{
 				var t = await CreateTask(task);
 				repository.DetachTask(t);
+				repository.DetachPrototype(task.Prototype);
 			}
 
 			foreach(var task in instruction.ToUpdate)
 			{
 				var t = await UpdateTask(task);
 				if (t != null)
+				{
 					repository.DetachTask(t);
+					repository.DetachPrototype(task.Prototype);
+				}
 			}
 
 			foreach(var uuid in instruction.ToDelete)

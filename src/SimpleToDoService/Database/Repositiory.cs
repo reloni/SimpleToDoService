@@ -16,6 +16,7 @@ namespace SimpleToDoService.DB
 		Task CreateTask(Task task);
 		Task UpdateTask(Task task);
 		void DetachTask(Task task);
+		void DetachPrototype(TaskPrototype prototype);
 		bool DeleteTask(Task task);
 		User CreateUser(User user);
 		bool DeleteUser(User user);
@@ -68,6 +69,12 @@ namespace SimpleToDoService.DB
 		public void DetachTask(Task task)
 		{
 			context.Entry(task).State = EntityState.Detached;
+		}
+
+		public void DetachPrototype(TaskPrototype prototype)
+		{
+			if (prototype != null)
+				context.Entry(prototype).State = EntityState.Detached;
 		}
 
 		public Task CreateTask(Task task)
