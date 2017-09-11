@@ -7,7 +7,7 @@ fi
 
 DBVERSION=$(psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -t -c 'select version from dbversion limit 1;')
 
-echo "DB version before migrations $DBVERSION" >> ${MIGRATE_LOG}
+echo "DB version before migrations $DBVERSION" > ${MIGRATE_LOG}
 (cd ./Migrations && ls | sort -n | xargs -n 1 psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -f >> ${MIGRATE_LOG} 2>&1)
 
 DBVERSION=$(psql --dbname=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB} -t -c 'select version from dbversion limit 1;')
