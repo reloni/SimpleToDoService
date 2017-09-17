@@ -7,10 +7,10 @@ namespace SimpleToDoService.DB
 {
 	public interface IToDoRepository
 	{
-		IEnumerable<User> Users();
+		IQueryable<User> Users();
 		User User(Guid uuid);
 		User UserByProviderId(string providerId);
-		IEnumerable<Task> Tasks(Guid userUuid);
+		IQueryable<Task> Tasks(Guid userUuid);
 		Task Task(Guid userUuid, Guid taskUuid);
 		Task ReloadTask(Task task);
 		Task CreateTask(Task task);
@@ -22,7 +22,7 @@ namespace SimpleToDoService.DB
 		bool DeleteUser(User user);
 		User UpdateUser(User user);
 		PushNotification CreatePushNotification(PushNotification notification);
-		IEnumerable<PushNotification> PushNotifications(Task task);
+		IQueryable<PushNotification> PushNotifications(Task task);
 		bool DeletePushNotification(PushNotification notification);
 	}
 
@@ -35,7 +35,7 @@ namespace SimpleToDoService.DB
 			this.context = context;
 		}
 
-		public IEnumerable<Task> Tasks(Guid userUuid)
+		public IQueryable<Task> Tasks(Guid userUuid)
 		{
 			return context.Tasks.Where(o => o.User.Uuid == userUuid)
 				          .Include(o => o.Prototype);
@@ -47,7 +47,7 @@ namespace SimpleToDoService.DB
 		//				  .Include(o => o.Prototype);
 		//}
 
-		public IEnumerable<User> Users()
+		public IQueryable<User> Users()
 		{
 			return context.Users;
 		}
@@ -212,7 +212,7 @@ namespace SimpleToDoService.DB
 			return null;
 		}
 
-		public IEnumerable<PushNotification> PushNotifications(Task task)
+		public IQueryable<PushNotification> PushNotifications(Task task)
 		{
 			return context.PushNotifications.Where(o => o.TaskUuid == task.Uuid);
 
