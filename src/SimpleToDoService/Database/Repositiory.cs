@@ -93,15 +93,16 @@ namespace SimpleToDoService.DB
 
 			var entity = context.Tasks.Add(task);
 
-			foreach (var tsk in context.Tasks.Where(o => o.TaskPrototypeUuid == task.TaskPrototypeUuid && o.Completed == false))
-			{
-				tsk.Completed = true;
-			}
+			var tasksToComplete = context.Tasks.Where(o => o.TaskPrototypeUuid == task.TaskPrototypeUuid && o.Completed == false).ToList();
+			tasksToComplete.ForEach(o => o.Completed = true);
 
 			try
 			{
 				if (context.SaveChanges() > 0)
+				{
+					tasksToComplete.ForEach(o => context.Entry(o).State = EntityState.Detached);
 					return entity.Entity;
+				}
 			}
 			catch(DbUpdateException ex)
 			{
@@ -115,7 +116,10 @@ namespace SimpleToDoService.DB
 					entity = context.Tasks.Add(task);
 
 					if (context.SaveChanges() > 0)
+					{
+						tasksToComplete.ForEach(o => context.Entry(o).State = EntityState.Detached);
 						return entity.Entity;
+					}
 				}
 				else
 				{
@@ -123,6 +127,7 @@ namespace SimpleToDoService.DB
 				}
 			}
 
+			tasksToComplete.ForEach(o => context.Entry(o).State = EntityState.Detached);
 			return null;
 		}
 
