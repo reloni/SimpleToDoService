@@ -177,7 +177,7 @@ namespace SimpleToDoServiceTests
 		}
 
 		[Fact]
-		public async System.Threading.Tasks.Task TestBatchUpdate_CreateAndAttachToExistedPrototype()
+		public async System.Threading.Tasks.Task TestBatchUpdate_CreateTaskAndCompletePreviousInPrototype()
 		{
 			var options = Utils.InMemoryContextOptions(Guid.NewGuid().ToString());
 			var context = new ToDoDbContext(options);
@@ -213,7 +213,7 @@ namespace SimpleToDoServiceTests
 
 			var objects = (result.Value as IEnumerable<Task>).ToList();
 			Assert.NotNull(objects);
-			Assert.Equal(3, objects?.Count());
+			Assert.Equal(2, objects?.Count());
 			Assert.True(context.Tasks.Where(o => o.Uuid == taskToCreate.Uuid).Count() == 1);
 			Assert.True(context.TaskPrototypes.Count() == 4);
 			Assert.True(context.Tasks.Count() == 5);

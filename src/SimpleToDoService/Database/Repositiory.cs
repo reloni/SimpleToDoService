@@ -93,6 +93,11 @@ namespace SimpleToDoService.DB
 
 			var entity = context.Tasks.Add(task);
 
+			foreach (var tsk in context.Tasks.Where(o => o.TaskPrototypeUuid == task.TaskPrototypeUuid && o.Completed == false))
+			{
+				tsk.Completed = true;
+			}
+
 			try
 			{
 				if (context.SaveChanges() > 0)
