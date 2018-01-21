@@ -2,7 +2,7 @@
 
 set -e
 
-export DOTNETSDK="2.0.4-sdk-2.1.3-stretch"
+export DOTNETSDK="2.0.5-sdk-2.1.4-stretch"
 
 docker run -it -d --name builder microsoft/dotnet:"$DOTNETSDK" tail -f /dev/null
 
