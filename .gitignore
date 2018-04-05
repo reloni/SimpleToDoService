@@ -41,3 +41,5 @@ Thumbs.db
 /Publish
 /Scripts/migrate.log
 /Scripts/restore.log
+/restore.log
+/.vs/SimpleToDoService/xs/UserPrefs.xml

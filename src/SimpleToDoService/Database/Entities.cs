@@ -59,7 +59,7 @@ namespace SimpleToDoService.DB
 		public Guid Uuid { get; set; }
 
 		[Column("cronexpression")]
-		[MaxLength(25)]
+		[MaxLength(255)]
 		public string CronExpression { get; set; }
 
 		[XmlIgnore]
