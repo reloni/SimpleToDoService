@@ -6,7 +6,7 @@ BEGIN
 
   raise notice 'Started';
 
-  ALTER TABLE TaskPrototype ALTER COLUMN CronExpression TYPE varchar (255)
+  ALTER TABLE TaskPrototype ALTER COLUMN CronExpression TYPE varchar (255);
 
   raise notice 'Altered TaskPrototype';
   raise notice 'Change CronExpression TYPE to varchar (255)';
