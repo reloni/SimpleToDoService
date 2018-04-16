@@ -2,18 +2,18 @@
 
 set -e
 
-docker stop migratelast || true
-docker run -d --rm --name migratelast -p 5432:5432 reloni/todo-postgres:latest
-
-export POSTGRES_USER=postgres
-export POSTGRES_PASSWORD=postgres
+export POSTGRES_USER=test
+export POSTGRES_PASSWORD=password
 export POSTGRES_HOST=localhost
 export POSTGRES_PORT=5432
-export POSTGRES_DB=postgres
+export POSTGRES_DB=lastdb
 export MIGRATE_LOG=$PWD/migrate.log
 export SECRETS_BUCKET_REGION=us-east-1
 export BACKUPS_BUCKET_NAME=task-manager-backups
 export BACKUP_RESTORE_LOG=$PWD/restore.log
+
+docker stop migratelast || true
+docker run -d --rm --name migratelast -e "POSTGRES_USER=${POSTGRES_USER}" -e "POSTGRES_PASSWORD=${POSTGRES_PASSWORD}" -e "POSTGRES_HOST=${POSTGRES_HOST}" -e "POSTGRES_PORT=${POSTGRES_PORT}" -e "POSTGRES_DB=${POSTGRES_DB}" -p 5432:5432 reloni/todo-postgres:latest
 
 sleep 7
 
