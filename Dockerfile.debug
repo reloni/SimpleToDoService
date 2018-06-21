@@ -1,8 +1,9 @@
-FROM microsoft/aspnetcore:2.0.5-stretch
+FROM microsoft/dotnet:2.1.1-aspnetcore-runtime-alpine3.7
 
 # Install the AWS CLI
-RUN apt-get update && \
-    apt-get install -y postgresql-client-9.6 && \
+RUN apk update && \
+    apk upgrade && \
+    apk add --update postgresql-client-9.6.9-r0 && \
     apt-get -y install python curl unzip && cd /tmp && \
     curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" \
     -o "awscli-bundle.zip" && \
