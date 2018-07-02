@@ -1,7 +1,8 @@
-FROM microsoft/aspnetcore:2.0.5-stretch
+FROM microsoft/dotnet:2.1.1-aspnetcore-runtime-stretch-slim
 
 # Install the AWS CLI
 RUN apt-get update && \
+    mkdir -p /usr/share/man/man1 /usr/share/man/man7 && \
     apt-get install -y postgresql-client-9.6 && \
     apt-get -y install python curl unzip && cd /tmp && \
     curl "https://s3.amazonaws.com/aws-cli/awscli-bundle.zip" \

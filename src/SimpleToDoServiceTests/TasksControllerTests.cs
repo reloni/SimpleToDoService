@@ -173,7 +173,7 @@ namespace SimpleToDoServiceTests
 			Assert.True(context.TaskPrototypes.Count() == 5);
 			Assert.True(context.Tasks.Count() == 5);
 			Assert.Equal("CRON", context.TaskPrototypes.Where(o => o.Uuid == taskToCreate.Prototype.Uuid).First().CronExpression);
-			Assert.Equal(1, context.TaskPrototypes.Where(o => o.Uuid == taskToCreate.Prototype.Uuid).First().Tasks.Count());
+			Assert.Single(context.TaskPrototypes.Where(o => o.Uuid == taskToCreate.Prototype.Uuid).First().Tasks);
 		}
 
 		[Fact]

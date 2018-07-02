@@ -99,7 +99,7 @@ namespace SimpleToDoService
 			loggerFactory.AddNLog();
 
 			//add NLog.Web
-			app.AddNLogWeb();
+			//app.AddNLogWeb();
 
 			//configure nlog.config in your project root.
 			env.ConfigureNLog("nlog.config");

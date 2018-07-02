@@ -10,14 +10,12 @@ namespace SimpleToDoService.Middleware
 	public class CheckUserMiddleware
 	{
 		private readonly RequestDelegate next;
-		private IToDoRepository repository;
 
 		public CheckUserMiddleware() { }
 
-		public CheckUserMiddleware(RequestDelegate next, IToDoRepository repository)
+		public CheckUserMiddleware(RequestDelegate next)
 		{
 			this.next = next;
-			this.repository = repository;
 		}
 
 		public void Configure(IApplicationBuilder applicationBuilder)
@@ -25,16 +23,16 @@ namespace SimpleToDoService.Middleware
 			applicationBuilder.UseMiddleware<CheckUserMiddleware>();
 		}
 
-		public async System.Threading.Tasks.Task Invoke(HttpContext context)
+		public async System.Threading.Tasks.Task Invoke(HttpContext context, IToDoRepository repository)
 		{
 			if (context.User.Identity.IsAuthenticated && !context.Items.Keys.Contains("UserUuid"))
 			{
-				context.Items.Add("UserUuid", LoadUserGuid(context));
+				context.Items.Add("UserUuid", LoadUserGuid(context, repository));
 			}
 			await next.Invoke(context);
 		}
 
-		private Guid LoadUserGuid(HttpContext context)
+		private Guid LoadUserGuid(HttpContext context, IToDoRepository repository)
 		{
 			var providerId = context.User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier).Value;
 			var currentUser = repository.UserByProviderId(providerId);
