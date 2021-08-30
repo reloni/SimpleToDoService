@@ -45,3 +45,4 @@ Thumbs.db
 /.vs/SimpleToDoService/xs/UserPrefs.xml
 /.vs
 /src/SimpleToDoService/nlog
+/src/SimpleToDoService/Properties/launchSettings.json

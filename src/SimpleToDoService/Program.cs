@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using NLog.Web;
+using NLog.Extensions.Logging;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Hosting;
 
 namespace SimpleToDoService
 {
@@ -16,8 +18,13 @@ namespace SimpleToDoService
 
 		public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
 			WebHost.CreateDefaultBuilder(args)
-				.UseStartup<Startup>()
-				.UseNLog();
+				.ConfigureLogging((hostingContext, logging) =>
+				{
+					logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+					logging.AddDebug();
+					logging.AddNLog("nlog.config");
+				})
+				.UseStartup<Startup>();
 	}
 }
 
