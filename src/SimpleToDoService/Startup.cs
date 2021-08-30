@@ -15,15 +15,16 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Hosting;
 
 namespace SimpleToDoService
 {
 	public class Startup
 	{
 		IConfigurationRoot Configuration { get; }
-		IHostingEnvironment HostingEnvironment { get; set; }
+		IHostEnvironment HostingEnvironment { get; set; }
 
-		public Startup(IHostingEnvironment env)
+		public Startup(IHostEnvironment env)
 		{
 			var builder = new ConfigurationBuilder()
 				.SetBasePath(env.ContentRootPath)
@@ -35,6 +36,8 @@ namespace SimpleToDoService
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.AddMvc(o => o.EnableEndpointRouting = false);
+
 			services.AddApiVersioning(options =>
 			{
 				options.ReportApiVersions = true;
@@ -46,10 +49,10 @@ namespace SimpleToDoService
 
 			services.AddResponseCompression();
 
-			services.AddMvc(options =>{ options.Filters.Add(typeof(ValidateModelAttribute)); })
-			        .AddXmlSerializerFormatters()
-			        .AddXmlDataContractSerializerFormatters()
-			        .AddJsonOptions(o =>
+			services.AddMvc(options => { options.Filters.Add(typeof(ValidateModelAttribute)); })
+					.AddXmlSerializerFormatters()
+					.AddXmlDataContractSerializerFormatters()
+					.AddNewtonsoftJson(o =>
 					{
 						o.SerializerSettings.DateFormatString = "yyyy-MM-dd'T'HH:mm:ss.fffzz";
 						o.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
@@ -93,18 +96,18 @@ namespace SimpleToDoService
 			}
 		}
 
-		public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+		public void Configure(IApplicationBuilder app, IHostEnvironment env, ILoggerFactory loggerFactory)
 		{
 			//add NLog to ASP.NET Core
-			loggerFactory.AddNLog();
+			//loggerFactory.AddNLog();
 
 			//add NLog.Web
 			//app.AddNLogWeb();
 
-			//configure nlog.config in your project root.
-			env.ConfigureNLog("nlog.config");
+            //configure nlog.config in your project root.
+            //env.ConfigureNLog("nlog.config");
 
-			LogManager.Configuration.Variables["logdir"] = Environment.GetEnvironmentVariable("LOGS_DIRECTORY");
+            LogManager.Configuration.Variables["logdir"] = Environment.GetEnvironmentVariable("LOGS_DIRECTORY");
 
 			if (env.IsDevelopment())
 			{
@@ -117,7 +120,7 @@ namespace SimpleToDoService
 
 			app.UseMiddleware<CheckUserMiddleware>();
 
-			app.UseMvc();
+            app.UseMvc();
 		}
 	}
 }

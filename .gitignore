@@ -44,3 +44,4 @@ Thumbs.db
 /restore.log
 /.vs/SimpleToDoService/xs/UserPrefs.xml
 /.vs
+/src/SimpleToDoService/nlog

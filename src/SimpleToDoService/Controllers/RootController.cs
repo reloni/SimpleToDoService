@@ -10,15 +10,16 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Hosting;
 
 namespace SimpleToDoService
 {
 	[Route("/")]
 	public class RootController : Controller
 	{
-		private readonly IHostingEnvironment _hostingEnvironment;
+		private readonly IHostEnvironment _hostingEnvironment;
 
-		public RootController(IHostingEnvironment hostingEnvironment)
+		public RootController(IHostEnvironment hostingEnvironment)
 		{
 			_hostingEnvironment = hostingEnvironment;
 		}
