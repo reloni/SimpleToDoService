@@ -46,7 +46,6 @@ namespace SimpleToDoService.DB
 		[XmlIgnore]
 		[JsonIgnore]
 		[IgnoreDataMember]
-		[ForeignKey("UserUuid")]
 		public IEnumerable<Task> Tasks { get; set; }
 	}
 
@@ -66,6 +65,7 @@ namespace SimpleToDoService.DB
 		[JsonIgnore]
 		[IgnoreDataMember]
 		[ForeignKey("TaskPrototypeUuid")]
+		[InverseProperty("Prototype")]
 		public IEnumerable<Task> Tasks { get; set; }
 	}
 
@@ -109,6 +109,7 @@ namespace SimpleToDoService.DB
 		[JsonIgnore]
 		[IgnoreDataMember]
 		[ForeignKey("UserUuid")]
+		[InverseProperty("Tasks")]
 		public User User { get; set; }
 
 		[XmlIgnore]
@@ -123,7 +124,6 @@ namespace SimpleToDoService.DB
 		[Column("taskprototype")]
 		public Guid TaskPrototypeUuid { get; set; }
 
-		[ForeignKey("TaskPrototypeUuid")]
 		[Required]
 		public TaskPrototype Prototype { get; set; }
 	}
