@@ -2,12 +2,26 @@
 
 set -e
 
-DB=todo
-SCHEMA_NAME=tododev
+DBTYPE=$1
+
+if [ "$DBTYPE" = "prod" ]; then
+  DB=todoprod
+  POSTGRES_TODO_USER=todouserprod
+  POSTGRES_TODO_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ArbitrraryBitsDatabaseTodouserprodSecret --query SecretString --output text | jq -r ".password")
+elif [ "$DBTYPE" = "dev" ]; then
+  DB=tododev
+  POSTGRES_TODO_USER=todouserdev
+  POSTGRES_TODO_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ArbitrraryBitsDatabaseTodouserdevSecret --query SecretString --output text | jq -r ".password")
+else
+  echo "Unknown dbtype"
+  exit 1
+fi
+
+echo "Restore DB $DBTYPE"
+
+SCHEMA_NAME=todoservice
 POSTGRES_ADMIN_USER=adminuser
 POSTGRES_ADMIN_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ArbitrraryBitsDatabaseAdminuserSecret --query SecretString --output text | jq -r ".password")
-POSTGRES_TODO_USER=todouserdev
-POSTGRES_TODO_PASSWORD=$(aws secretsmanager get-secret-value --secret-id ArbitrraryBitsDatabaseTodouserdevSecret --query SecretString --output text | jq -r ".password")
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 SECRETS_BUCKET_REGION=us-east-1
