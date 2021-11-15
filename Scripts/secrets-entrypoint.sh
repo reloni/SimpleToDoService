@@ -2,10 +2,6 @@
 
 set -e
 
-if [ "$RESTORE_BACKUP" = "YES" ]; then
-  sh /RestoreDB.sh
-fi
-
 #migrate database
 (cd / && sh /MigrateDB.sh)
 
