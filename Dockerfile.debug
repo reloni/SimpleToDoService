@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/3.1.21-bullseye-slim
+FROM mcr.microsoft.com/dotnet/runtime:3.1.21-bullseye-slim
 
 # Install the AWS CLI
 RUN apt-get update && \

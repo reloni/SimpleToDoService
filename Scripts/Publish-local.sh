@@ -2,13 +2,15 @@
 
 set -e
 
+docker rm -f builder || true
+
 TRAVIS_TAG=$1
 DOCKER_AWS_REPONAME="437377620726.dkr.ecr.us-east-1.amazonaws.com/todo-service"
 DOCKER_AWS_REGION="us-east-1"
 
 export DOTNETSDK="3.1.415-bullseye"
 #docker run -it -d --platform linux/amd64 mcr.microsoft.com/dotnet/sdk:3.1.415-bullseye tail -f /dev/null
-docker run -it -d --platform linux/amd64 --name builder mcr.microsoft.com/dotnet/sdk:"$DOTNETSDK" tail -f /dev/null
+docker run -it -d --name builder mcr.microsoft.com/dotnet/sdk:"$DOTNETSDK" tail -f /dev/null
 
 docker exec builder bash -c 'mkdir -p app/SimpleToDoService; exit $?'
 docker exec builder bash -c 'mkdir -p app/SimpleToDoServiceTests; exit $?'
@@ -45,7 +47,6 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   fi
 
   echo Build Complete
-  exit 1
 
   #push to AWS
   aws ecr get-login --no-include-email --region ${DOCKER_AWS_REGION} > login
