@@ -58,13 +58,13 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   fi
   docker tag $REPO:$TAG $REPO:dev-latest
 
-  docker push $REPO > PushLog.log
+  docker push --all-tags $REPO > PushLog.log
   echo "AWS push log ===="
   cat PushLog.log
   echo "======"
 
   #push to docker-hub
-  # docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
+  docker login -u ${DOCKER_USER} -p ${DOCKER_PASS}
   export REPO=reloni/todo-service
   docker build -f $DOCKERFILE -t $REPO:$TAG .
 
@@ -73,7 +73,7 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   fi
   docker tag $REPO:$TAG $REPO:dev-latest
 
-  docker push $REPO > PushLog.log
+  docker push --all-tags $REPO > PushLog.log
   echo "Docker hub push log ===="
   cat PushLog.log
   echo "======"
