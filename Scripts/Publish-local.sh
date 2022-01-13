@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+set -e pipefail
 
 docker rm -f builder || true
 
@@ -53,9 +53,9 @@ if [ "${TRAVIS_TAG}" != "" ]; then
   eval "$(cat login)"
   docker build -f $DOCKERFILE -t $REPO:$TAG .
 
-  if [ "$SUBTAG" = "release" ]; then
-    docker tag $REPO:$TAG $REPO:latest
-  fi
+  # if [ "$SUBTAG" = "release" ]; then
+  #   docker tag $REPO:$TAG $REPO:latest
+  # fi
   docker tag $REPO:$TAG $REPO:dev-latest
 
   docker push --all-tags $REPO > PushLog.log
